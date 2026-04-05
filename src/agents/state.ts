@@ -14,6 +14,7 @@ export interface SchemaColumn {
   nullable:     boolean
   isPrimaryKey: boolean
   isForeignKey: boolean
+  enumValues:   string[] | null
 }
 
 export interface RelevantTable {
@@ -41,6 +42,8 @@ export interface SqlAttempt {
   error:       string | null
   generatedAt: string
 }
+
+
 
 export const AgentState = Annotation.Root({
 

@@ -24,7 +24,7 @@ export const POST = withErrorHandler(async (req: NextRequest) => {
   const { userId } = await auth();
   if (!userId) throw new ApiError("UNAUTHORIZED", "Authentication required", 401);
 
-  // const userId = "seed-user-001"
+  //const userId = "seed-user-001"
   const body = (await req.json()) as CreateConnectionBody;
   const { label, dbType, host, port, user, password, database, ssl } = body;
 

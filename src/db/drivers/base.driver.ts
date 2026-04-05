@@ -1,10 +1,11 @@
 export interface ColumnMetadata {
-  name: string
-  type: string
-  nullable: boolean
-  default: string | null
+  name:         string
+  type:         string
+  nullable:     boolean
+  default:      string | null
   isPrimaryKey: boolean
   isForeignKey: boolean
+  enumValues:   string[] | null
 }
 
 export interface ForeignKeyMetadata {

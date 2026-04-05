@@ -3,13 +3,32 @@ import { AgentStateType, RelevantTable, SchemaColumn } from "../state";
 
 const SMALL_DB_THRESHOLD = 50;
 
+function normalizeColumn(raw: unknown): SchemaColumn {
+    const col = raw as Record<string, unknown>;
+
+    return {
+        name: String(col.name ?? ""),
+        type: String(col.type ?? "text"),
+        nullable: Boolean(col.nullable ?? true),
+        isPrimaryKey: Boolean(col.isPrimaryKey ?? false),
+        isForeignKey: Boolean(col.isForeignKey ?? false),
+        enumValues: Array.isArray(col.enumValues)
+            ? col.enumValues.map(String)
+            : null,
+    };
+}
+
 function buildCompactSummary(tables: RelevantTable[]): string {
     return tables
         .map((table) => {
             const cols = table.columns.map((col) => {
-                // Start without closing paren — we close it at the end
                 let colStr = `${col.name} (${col.type}`;
-
+                if (
+                    Array.isArray(col.enumValues) &&
+                    col.enumValues.length > 0
+                ) {
+                    colStr += `: ${col.enumValues.join("|")}`;
+                }
                 if (col.isPrimaryKey) {
                     colStr += ", PK";
                 } else if (col.isForeignKey) {
@@ -20,14 +39,11 @@ function buildCompactSummary(tables: RelevantTable[]): string {
                         colStr += `, FK→${fk.referencedTable}.${fk.referencedColumn}`;
                     }
                 }
-
                 if (!col.nullable && !col.isPrimaryKey) {
                     colStr += ", NOT NULL";
                 }
-
-                colStr += ")"; // single closing paren at the end
-
-                return colStr; // ← was missing, cols was array of undefined
+                colStr += ")";
+                return colStr;
             });
 
             return `${table.tableName}: ${cols.join(", ")}`;
@@ -38,7 +54,6 @@ function buildCompactSummary(tables: RelevantTable[]): string {
 export async function schemaContextNode(
     state: AgentStateType,
 ): Promise<Partial<AgentStateType>> {
-
     const rawMetadata = await prisma.schemaMetadata.findMany({
         where: { connectionId: state.connectionId },
         select: {
@@ -58,14 +73,16 @@ export async function schemaContextNode(
         return { relevantTables: [] };
     }
 
-    const allTables: RelevantTable[] = rawMetadata.filter((row) => !row.tableName.startsWith('_')).map((row) => ({
-        tableName: row.tableName,
-        schemaName: row.schemaName,
-        columns: row.columns as unknown as SchemaColumn[],
-        primaryKeys: row.primaryKeys,
-        foreignKeys: row.foreignKeys as RelevantTable["foreignKeys"],
-        rowEstimate: Number(row.rowEstimate),
-    }));
+    const allTables: RelevantTable[] = rawMetadata
+        .filter((row) => !row.tableName.startsWith("_"))
+        .map((row) => ({
+            tableName: row.tableName,
+            schemaName: row.schemaName,
+            columns: (row.columns as unknown[]).map(normalizeColumn), // ← normalized
+            primaryKeys: row.primaryKeys,
+            foreignKeys: row.foreignKeys as RelevantTable["foreignKeys"],
+            rowEstimate: Number(row.rowEstimate),
+        }));
 
     let relevantTables: RelevantTable[];
 
@@ -86,7 +103,10 @@ export async function schemaContextNode(
     return { relevantTables };
 }
 
-export function buildSchemaString(tables: RelevantTable[],totalTableCount: number,): string {
+export function buildSchemaString(
+    tables: RelevantTable[],
+    totalTableCount: number,
+): string {
     if (totalTableCount <= SMALL_DB_THRESHOLD) {
         return buildCompactSummary(tables);
     }
