@@ -1,7 +1,12 @@
+import "dotenv/config"
 import { encryptObject } from "@/lib/encryption"
 import { PrismaClient, LLMProvider, DBType, SyncStatus } from "../src/generated/prisma/client"
 import { PrismaPg } from "@prisma/adapter-pg"
 import { Pool } from "pg"
+
+if (!process.env.DATABASE_URL) {
+  throw new Error("DATABASE_URL is required to run prisma/seed.ts")
+}
 
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
