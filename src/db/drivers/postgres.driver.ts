@@ -72,7 +72,11 @@ export class PostgresDriver implements DatabaseDriver {
         const columnsResult = await client.query(`
           SELECT
             c.column_name,
-            c.data_type,
+            CASE
+              WHEN c.data_type = 'USER-DEFINED' THEN c.udt_name
+              WHEN c.data_type = 'ARRAY' THEN c.udt_name || '[]'
+              ELSE c.data_type
+            END as data_type,
             c.is_nullable,
             c.column_default,
             CASE WHEN pk.column_name IS NOT NULL THEN true ELSE false END as is_primary_key,
