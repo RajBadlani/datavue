@@ -1,3 +1,4 @@
+import 'dotenv/config'
 import { anthropic } from '@ai-sdk/anthropic'
 import { groq } from '@ai-sdk/groq'
 import { generateText } from 'ai'
@@ -32,7 +33,7 @@ function toLanguageModel(model: unknown): Parameters<typeof generateText>[0]['mo
   return model as Parameters<typeof generateText>[0]['model']
 }
 
-const DEFAULT_PROVIDER: SupportedLLMProvider = 'ANTHROPIC'
+const DEFAULT_PROVIDER: SupportedLLMProvider = 'GROQ'
 
 function getProvider(): SupportedLLMProvider {
   const provider = process.env.LLM_PROVIDER?.trim().toUpperCase() ?? DEFAULT_PROVIDER

@@ -7,7 +7,7 @@ async function test() {
 
   // ─── Mock minimal state ───────────────────────────────────────────────────
   const mockState: Partial<AgentStateType> = {
-    connectionId:        'e624a093-a79c-4a1e-a603-bf513e5c93f1',
+    connectionId:        '5b4aafaf-a6fa-45fb-b664-9883ffc1011d',
     userId:              'seed-user-001',
     nlQuery:             'how many users are in the database',
     relevantTables:      [],

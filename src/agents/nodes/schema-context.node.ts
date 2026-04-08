@@ -22,7 +22,7 @@ function buildCompactSummary(tables: RelevantTable[]): string {
     return tables
         .map((table) => {
             const cols = table.columns.map((col) => {
-                let colStr = `${col.name} (${col.type}`;
+                let colStr = `"${col.name}" (${col.type}`;
                 if (
                     Array.isArray(col.enumValues) &&
                     col.enumValues.length > 0

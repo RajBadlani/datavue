@@ -110,7 +110,7 @@ async function test() {
   console.log('Loading schema context...')
 
   const schemaState = await schemaContextNode({
-    connectionId:        'e624a093-a79c-4a1e-a603-bf513e5c93f1',
+    connectionId:        '5b4aafaf-a6fa-45fb-b664-9883ffc1011d',
     userId:              'seed-user-001',
     nlQuery:             '',
     relevantTables:      [],
@@ -126,7 +126,7 @@ async function test() {
 
   // ─── Step 2: Build base state shared across all tests ─────────────────────
   const baseState: Partial<AgentStateType> = {
-    connectionId:        'e624a093-a79c-4a1e-a603-bf513e5c93f1',
+    connectionId:        '5b4aafaf-a6fa-45fb-b664-9883ffc1011d',
     userId:              'seed-user-001',
     relevantTables:      schemaState.relevantTables,
     conversationHistory: [],
