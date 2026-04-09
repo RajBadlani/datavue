@@ -3,6 +3,8 @@ import { AgentStateType, RelevantTable, SchemaColumn } from "../state";
 
 const SMALL_DB_THRESHOLD = 50;
 
+type SchemaSummaryFormat = "compact" | "detailed";
+
 function normalizeColumn(raw: unknown): SchemaColumn {
     const col = raw as Record<string, unknown>;
 
@@ -49,6 +51,44 @@ function buildCompactSummary(tables: RelevantTable[]): string {
             return `${table.tableName}: ${cols.join(", ")}`;
         })
         .join("\n");
+}
+
+function buildDetailedSummary(tables: RelevantTable[]): string {
+    if (tables.length === 0) {
+        return "No schema metadata is available for this database.";
+    }
+
+    const lines: string[] = [];
+
+    lines.push(`Total tables: ${tables.length}`);
+    lines.push("");
+
+    for (const table of tables) {
+        const columnNames = table.columns.map((col) => `"${col.name}"`);
+        const primaryKeys =
+            table.primaryKeys.length > 0
+                ? table.primaryKeys.map((pk) => `"${pk}"`).join(", ")
+                : "None";
+
+        const foreignKeys =
+            table.foreignKeys.length > 0
+                ? table.foreignKeys
+                      .map(
+                          (fk) =>
+                              `"${fk.columnName}" → ${fk.referencedTable}."${fk.referencedColumn}"`,
+                      )
+                      .join(", ")
+                : "None";
+
+        lines.push(`Table: ${table.schemaName}.${table.tableName}`);
+        lines.push(`Approx rows: ${table.rowEstimate}`);
+        lines.push(`Columns: ${columnNames.join(", ")}`);
+        lines.push(`Primary keys: ${primaryKeys}`);
+        lines.push(`Foreign keys: ${foreignKeys}`);
+        lines.push("");
+    }
+
+    return lines.join("\n");
 }
 
 export async function schemaContextNode(
@@ -106,7 +146,12 @@ export async function schemaContextNode(
 export function buildSchemaString(
     tables: RelevantTable[],
     totalTableCount: number,
+    format: SchemaSummaryFormat = "compact",
 ): string {
+    if (format === "detailed") {
+        return buildDetailedSummary(tables);
+    }
+
     if (totalTableCount <= SMALL_DB_THRESHOLD) {
         return buildCompactSummary(tables);
     }

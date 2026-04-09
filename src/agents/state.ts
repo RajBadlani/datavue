@@ -45,10 +45,17 @@ export interface SqlAttempt {
     generatedAt: string;
 }
 
+export type AgentIntent = "general_chat" | "schema_explanation" | "data_query";
+
 export const AgentState = Annotation.Root({
     nlQuery: Annotation<string>({
         reducer: (_, newVal) => newVal,
         default: () => "",
+    }),
+
+    intent: Annotation<AgentIntent>({
+        reducer: (_, newVal) => newVal,
+        default: () => "general_chat",
     }),
 
     connectionId: Annotation<string>({
