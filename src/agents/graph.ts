@@ -11,7 +11,9 @@ import { generateSQLNode } from "./nodes/generate-sql.node";
 import { validateSQLNode } from "./nodes/validator-sql.node";
 import { executeSQLNode } from "./nodes/execute-sql.node";
 import { selfHealNode } from "./nodes/selfHealNode";
+import { detectVisualizationNode } from "./nodes/detect-visualization.node";
 import { generateResponseNode } from "./nodes/generate-response.node";
+import { auditLog } from "./nodes/audit-log.node";
 
 // ─── Router: After Intent Classification ─────────────────────────────────────
 function routeAfterIntent(
@@ -59,7 +61,7 @@ function routeAfterValidation(
 // ─── Router: After SQL Execution ─────────────────────────────────────────────
 function routeAfterExecution(
     state: AgentStateType,
-): "generateResponse" | "selfHeal" {
+): "generateResponse" | "selfHeal" | "detectVisualization" {
     if (state.isBlocked) {
         console.log(
             "[routeAfterExecution] Execution hard-blocked → generateResponse",
@@ -69,9 +71,9 @@ function routeAfterExecution(
 
     if (state.queryResult) {
         console.log(
-            "[routeAfterExecution] Execution succeeded → generateResponse",
+            "[routeAfterExecution] Execution succeeded → detectVisualization",
         );
-        return "generateResponse";
+        return "detectVisualization";
     }
 
     if (state.lastError.trim() !== "" && state.retryCount < MAX_RETRIES) {
@@ -99,7 +101,9 @@ export function buildAgentGraph() {
         .addNode("validateSQL", validateSQLNode)
         .addNode("executeSQL", executeSQLNode)
         .addNode("selfHeal", selfHealNode)
+        .addNode("detectVisualization", detectVisualizationNode)
         .addNode("generateResponse", generateResponseNode)
+        .addNode("auditLog", auditLog)
 
         // Direct edges
         .addEdge(START, "classifyIntent")
@@ -107,7 +111,9 @@ export function buildAgentGraph() {
         .addEdge("generateSchemaResponse", END)
         .addEdge("generateSQL", "validateSQL")
         .addEdge("selfHeal", "generateSQL")
-        .addEdge("generateResponse", END)
+        .addEdge("detectVisualization", "generateResponse")
+        .addEdge("generateResponse", "auditLog")
+        .addEdge("auditLog", END)
 
         // Conditional edges
         .addConditionalEdges("classifyIntent", routeAfterIntent, {
@@ -125,6 +131,7 @@ export function buildAgentGraph() {
         .addConditionalEdges("executeSQL", routeAfterExecution, {
             generateResponse: "generateResponse",
             selfHeal: "selfHeal",
+            detectVisualization: "detectVisualization",
         });
 
     return graph.compile();
