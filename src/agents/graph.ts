@@ -1,6 +1,8 @@
 import { END, START, StateGraph } from "@langchain/langgraph";
 import { AgentState, AgentStateType } from "./state";
 
+import { MAX_RETRIES } from "./constants/agent.constants";
+
 import { classifyIntentNode } from "./nodes/classify-intent.node";
 import { schemaContextNode } from "./nodes/schema-context.node";
 import { generateGeneralResponseNode } from "./nodes/generate-general-response.node";
@@ -8,10 +10,8 @@ import { generateSchemaResponseNode } from "./nodes/generate-schema-response.nod
 import { generateSQLNode } from "./nodes/generate-sql.node";
 import { validateSQLNode } from "./nodes/validator-sql.node";
 import { executeSQLNode } from "./nodes/execute-sql.node";
-import { incrementRetryNode } from "./nodes/incrementRetry.node";
+import { selfHealNode } from "./nodes/selfHealNode";
 import { generateResponseNode } from "./nodes/generate-response.node";
-
-const MAX_RETRIES = 2;
 
 // ─── Router: After Intent Classification ─────────────────────────────────────
 function routeAfterIntent(
@@ -59,7 +59,7 @@ function routeAfterValidation(
 // ─── Router: After SQL Execution ─────────────────────────────────────────────
 function routeAfterExecution(
     state: AgentStateType,
-): "generateResponse" | "incrementRetry" {
+): "generateResponse" | "selfHeal" {
     if (state.isBlocked) {
         console.log(
             "[routeAfterExecution] Execution hard-blocked → generateResponse",
@@ -76,9 +76,9 @@ function routeAfterExecution(
 
     if (state.lastError.trim() !== "" && state.retryCount < MAX_RETRIES) {
         console.log(
-            `[routeAfterExecution] Execution failed with retryable error → incrementRetry (retryCount=${state.retryCount}, max=${MAX_RETRIES})`,
+            `[routeAfterExecution] Execution failed with retryable error → selfHeal (retryCount=${state.retryCount}, max=${MAX_RETRIES})`,
         );
-        return "incrementRetry";
+        return "selfHeal";
     }
 
     console.log(
@@ -98,7 +98,7 @@ export function buildAgentGraph() {
         .addNode("generateSQL", generateSQLNode)
         .addNode("validateSQL", validateSQLNode)
         .addNode("executeSQL", executeSQLNode)
-        .addNode("incrementRetry", incrementRetryNode)
+        .addNode("selfHeal", selfHealNode)
         .addNode("generateResponse", generateResponseNode)
 
         // Direct edges
@@ -106,7 +106,7 @@ export function buildAgentGraph() {
         .addEdge("generateGeneralResponse", END)
         .addEdge("generateSchemaResponse", END)
         .addEdge("generateSQL", "validateSQL")
-        .addEdge("incrementRetry", "generateSQL")
+        .addEdge("selfHeal", "generateSQL")
         .addEdge("generateResponse", END)
 
         // Conditional edges
@@ -124,7 +124,7 @@ export function buildAgentGraph() {
         })
         .addConditionalEdges("executeSQL", routeAfterExecution, {
             generateResponse: "generateResponse",
-            incrementRetry: "incrementRetry",
+            selfHeal: "selfHeal",
         });
 
     return graph.compile();
