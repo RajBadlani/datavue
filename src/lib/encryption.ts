@@ -2,7 +2,6 @@ import crypto from "crypto";
 
 const ALGORITHM = "aes-256-gcm";
 const IV_LENGTH = 12; // 96 bits — GCM standard
-const TAG_LENGTH = 16 
 const KEY_LENGTH = 32; // 256 bits — AES-256
 
 function getEncryptionKey(): Buffer {

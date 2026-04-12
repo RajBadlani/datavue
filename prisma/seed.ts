@@ -36,7 +36,9 @@ async function main() {
     data: {
       id: 'seed-user-001',
       email: 'dev@datavue.local',
-      passwordHash: null, // Clerk handles auth, no password stored
+      name: 'Datavue Developer',
+      passwordHash: null,
+      onboardingComplete: true,
       llmProvider: LLMProvider.ANTHROPIC,
       encryptedApiKey: null,
     },
@@ -49,15 +51,6 @@ async function main() {
   // In production this will always be AES-256-GCM encrypted
   // We use a raw placeholder here because the encryption utility
   // doesn't exist yet — replace this once encryption.ts is built
-  const rawCredentials = JSON.stringify({
-    host: 'localhost',
-    port: 5432,
-    user: 'postgres',
-    password: 'password',
-    database: 'datavue',
-    ssl: false,
-  })
-
   const connection = await prisma.connection.create({
     data: {
       id: 'seed-conn-001',

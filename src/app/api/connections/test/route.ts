@@ -2,7 +2,7 @@ import { ConnectionCredentials, createDriver } from "@/db/drivers";
 import { DBType } from "@/generated/prisma/enums";
 import { ApiError } from "@/lib/api-error";
 import { withErrorHandler } from "@/lib/api-handler";
-import { auth } from "@clerk/nextjs/server";
+import { requireAuthSession } from "@/lib/server/resolve-user";
 import { NextRequest, NextResponse } from "next/server";
 
 interface TestConnectionBody{
@@ -17,8 +17,7 @@ interface TestConnectionBody{
 
 export const POST = withErrorHandler ( async ( req : NextRequest)=>{
 
-    const { userId } = await auth();
-    if( !userId ) throw new ApiError("UNAUTHORIZED" , "Authentication requried" , 401)
+    await requireAuthSession()
 
     const body = await req.json() as TestConnectionBody
     const { dbType , host , port , user , password , database , ssl } = body
