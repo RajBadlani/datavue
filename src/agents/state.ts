@@ -45,6 +45,29 @@ export interface SqlAttempt {
     generatedAt: string;
 }
 
+export interface ChartConfig {
+    type:
+        | "line"
+        | "bar"
+        | "pie"
+        | "area"
+        | "scatter"
+        | "table"
+        | "metric_card"
+        | "none";
+    xKey?: string;
+    yKey?: string;
+    series?: string[];
+    xLabel?: string;
+    yLabel?: string;
+    color?: string;
+    title?: string;
+    isTruncated?: boolean;
+    // metric_card specific
+    value?: string;
+    label?: string;
+}
+
 export type AgentIntent = "general_chat" | "schema_explanation" | "data_query";
 
 export const AgentState = Annotation.Root({
@@ -110,6 +133,10 @@ export const AgentState = Annotation.Root({
         reducer: (_, newVal) => newVal,
         default: () => Date.now(),
     }),
+    chartConfig: Annotation<ChartConfig | null>({
+        reducer: (_, newVal) => newVal,
+        default: () => null,
+    })
 });
 
 // ─── Export the inferred type ──────────────────────────────────────────────────

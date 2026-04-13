@@ -5,9 +5,9 @@ import prisma from '@/lib/prisma'
 
 async function main() {
   const input: Partial<AgentStateType> = {
-    nlQuery: `Show me the total number of row count of schema_metadata table` ,
-    connectionId: '02d744c8-5dfd-4862-8b54-f3ccf74ea127',
-    userId: 'seed-user-001',
+    nlQuery: `Does any user exist with email rajbadlani9@gmail.com? Yes or No` ,
+    connectionId: '6b0caf74-02f7-43c3-a314-ef921305a56a',
+    userId: 'yU35e3ALtw87pGfBlvWf8meFLRKZHNc9',
 
     conversationHistory: [],
     relevantTables: [],
@@ -26,7 +26,7 @@ async function main() {
   const result = await agentGraph.invoke(input)
 
   console.log('\n========== FINAL STATE ==========')
-  console.dir(result, { depth: null })
+  // console.dir(result, { depth: null })
 
   console.log('\n========== FINAL RESPONSE ==========')
   console.log(result.finalResponse)
