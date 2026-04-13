@@ -1,26 +1,128 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #F7F4EB;
+  --foreground: #313852;
+  --muted: #7B7E8F;
+  --border: #C2CBD4;
+  --accent: #5849F2;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --font-sans: var(--font-plus-jakarta);
+  --font-mono: var(--font-fira-code);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+html {
+  scroll-behavior: smooth;
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-plus-jakarta), sans-serif;
+  overflow-x: hidden;
+}
+
+::selection {
+  background: #5849F2;
+  color: #FFFFFF;
+}
+
+.font-display {
+  font-family: "Hagrid Text", "Arial Black", var(--font-plus-jakarta), sans-serif;
+}
+
+a,
+button,
+input,
+select,
+textarea {
+  -webkit-tap-highlight-color: transparent;
+}
+
+a {
+  text-decoration: none;
+}
+
+input,
+select,
+textarea,
+button {
+  font: inherit;
+}
+
+input::placeholder,
+textarea::placeholder {
+  color: #8B8FA0;
+}
+
+.underline-link {
+  position: relative;
+}
+
+.underline-link::after {
+  content: "";
+  position: absolute;
+  bottom: -0.45rem;
+  left: 0;
+  width: 100%;
+  height: 1px;
+  transform: scaleX(0);
+  transform-origin: left;
+  background: #5849F2;
+  transition: transform 200ms ease;
+}
+
+.underline-link:hover::after,
+.underline-link:focus-visible::after {
+  transform: scaleX(1);
+}
+
+.hero-dot-pattern {
+  background-image: radial-gradient(circle, #313852 1px, transparent 1px);
+  background-size: 24px 24px;
+}
+
+.sheen-card {
+  position: relative;
+  isolation: isolate;
+}
+
+.sheen-card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  border-radius: inherit;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.7), rgba(237, 234, 255, 0.6), rgba(255, 255, 255, 0.2));
+  opacity: 0;
+  transition: opacity 250ms ease;
+}
+
+.sheen-card:hover::before {
+  opacity: 1;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }
