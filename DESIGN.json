@@ -1,0 +1,71 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-05-01T00:00:00.000Z",
+  "title": "Design System: Datavue",
+  "extensions": {
+    "colorMeta": {
+      "warm-ledger-bg": {
+        "role": "neutral",
+        "displayName": "Warm Ledger Background",
+        "canonical": "#F7F4EB",
+        "usage": "Default page atmosphere for landing, auth, and app shells."
+      },
+      "ink-slate": {
+        "role": "neutral",
+        "displayName": "Ink Slate",
+        "canonical": "#313852",
+        "usage": "Primary text and high-confidence UI framing."
+      },
+      "violet-primary": {
+        "role": "primary",
+        "displayName": "Ledger Violet",
+        "canonical": "#5849F2",
+        "usage": "Primary actions, focus, selected state, and important signal."
+      },
+      "muted-slate": {
+        "role": "neutral",
+        "displayName": "Muted Slate",
+        "canonical": "#7B7E8F",
+        "usage": "Secondary copy, metadata, inactive navigation, and placeholders."
+      },
+      "border-slate": {
+        "role": "neutral",
+        "displayName": "Border Slate",
+        "canonical": "#C2CBD4",
+        "usage": "Primary structural borders and dividers."
+      }
+    },
+    "typographyMeta": {
+      "display": {
+        "displayName": "Display",
+        "purpose": "Landing and brand-grade headings only."
+      },
+      "body": {
+        "displayName": "Body",
+        "purpose": "Product copy, form labels, cards, and explanatory prose."
+      },
+      "mono": {
+        "displayName": "SQL Mono",
+        "purpose": "Generated SQL, schema details, and code-like snippets."
+      }
+    },
+    "elevation": {
+      "heroConsoleLift": "0 30px 90px rgba(49,56,82,0.1)",
+      "authFormLift": "0 20px 70px rgba(49,56,82,0.08)",
+      "floatingPopoverLift": "0 20px 60px rgba(49,56,82,0.08)",
+      "primaryButtonLift": "0 14px 30px rgba(88,73,242,0.28)",
+      "quietCardLift": "0 18px 60px rgba(49,56,82,0.05)"
+    },
+    "motion": {
+      "standardDuration": "200ms",
+      "revealDuration": "500ms",
+      "principle": "Motion communicates state changes and should respect reduced-motion preferences."
+    },
+    "rules": [
+      "Trust is the interface.",
+      "Ledger Violet is scarce and functional.",
+      "Resting product surfaces are border-first, not shadow-first.",
+      "Avoid dark terminal costume and generic AI SaaS decoration."
+    ]
+  }
+}

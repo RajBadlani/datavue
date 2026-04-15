@@ -25,7 +25,7 @@ The system design document in `datavue-system-design.md` is the product blueprin
 
 Already present:
 - Next.js App Router app
-- Clerk auth shell and middleware
+- Better Auth email/password auth shell and proxy protection
 - Prisma schema and migrations
 - seed script with meaningful domain data
 - AES-256-GCM encryption utility
@@ -48,7 +48,7 @@ When implementing features, align with the system design doc unless the existing
 - React 19
 - TypeScript with strict mode
 - Tailwind CSS v4
-- Clerk for current cloud auth flow
+- Better Auth for email/password auth
 - Prisma 7 with PostgreSQL and `@prisma/adapter-pg`
 - `pg` for Postgres connectivity
 - planned BullMQ + Redis architecture
@@ -58,6 +58,8 @@ When implementing features, align with the system design doc unless the existing
 ## Must-Read Sources Before Major Changes
 
 - `datavue-system-design.md` for product architecture and sequencing
+- `PRODUCT.md` for product design strategy, register, brand personality, anti-references, and accessibility goals
+- `DESIGN.md` for visual system tokens, component language, elevation, and design guardrails
 - `prisma/schema.prisma` for domain model truth
 - `src/lib/api-error.ts` and `src/lib/api-handler.ts` before adding any API route
 - `src/lib/encryption.ts` before touching credential storage
@@ -68,7 +70,7 @@ When implementing features, align with the system design doc unless the existing
 Current important paths:
 - `src/app/` - App Router pages and layouts
 - `src/lib/` - shared server/client-safe utilities and API helpers
-- `src/proxy.ts` - Clerk middleware entrypoint
+- `src/proxy.ts` - Better Auth route protection entrypoint
 - `prisma/schema.prisma` - application data model
 - `prisma/migrations/` - database migrations
 - `prisma/seed.ts` - local development seed data
@@ -97,10 +99,11 @@ Prefer adding code in a way that supports this eventual structure.
 
 ## Authentication Conventions
 
-- Current auth is Clerk-based.
-- Use Clerk-compatible server patterns for protected routes and server logic.
-- Do not reintroduce custom password auth flows in app code unless explicitly requested.
-- The Prisma `User` model may evolve to include a Clerk identifier; design new code with that likely direction in mind.
+- Current auth is Better Auth-based.
+- Use `src/lib/auth.ts` for the Better Auth server instance.
+- Use `src/lib/auth-client.ts` for client sign-in/sign-up/sign-out flows.
+- Use `requireAuthSession()` or `requireCurrentUser()` from `src/lib/server/resolve-user.ts` for protected server logic.
+- The Prisma `User` model is the auth user and the application ownership user. Do not add a second identity mapping layer unless explicitly required.
 
 ## Database Conventions
 
@@ -165,7 +168,7 @@ Design note:
 ## What Not To Touch
 
 - Do not replace App Router with Pages Router.
-- Do not replace Clerk middleware/auth patterns with outdated Next.js auth patterns.
+- Do not replace Better Auth route protection with outdated Next.js auth patterns.
 - Do not commit `src/generated/prisma/`.
 - Do not bypass `src/lib/prisma.ts` with ad hoc app-runtime Prisma client creation.
 - Do not break the error contract in `src/lib/api-handler.ts`.
@@ -206,7 +209,7 @@ New features should map cleanly to these domain objects.
 
 Based on the current codebase and system design, the likely near-term priorities are:
 - build protected API route handlers for connections and metadata
-- establish Clerk user to Prisma user resolution cleanly
+- keep Better Auth user sessions aligned with Prisma ownership checks
 - move feature code onto the Prisma singleton and shared API wrapper pattern
 - implement connection CRUD and ownership checks
 - wire encrypted credential storage and retrieval into runtime flows
@@ -227,7 +230,7 @@ When starting a new task, prefer the minimum path that fits this roadmap without
 
 Before finishing any substantial change, verify:
 - does it align with `datavue-system-design.md`?
-- does it preserve App Router and Clerk conventions?
+- does it preserve App Router and Better Auth conventions?
 - does it keep the API wrapper/error architecture intact?
 - does it use the shared Prisma singleton?
 - does it avoid touching generated Prisma output?
