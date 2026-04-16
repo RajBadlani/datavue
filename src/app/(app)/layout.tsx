@@ -1,8 +1,8 @@
 import { AppShell } from '@/components/app-shell'
-import { requireCurrentUser } from '@/lib/server/resolve-user'
+import { requireUserOrRedirect } from '@/lib/server/resolve-user'
 
 export default async function ProductLayout({ children }: { children: React.ReactNode }) {
-  const user = await requireCurrentUser()
+  const user = await requireUserOrRedirect()
 
   return (
     <AppShell user={{ name: user.name, email: user.email }}>
