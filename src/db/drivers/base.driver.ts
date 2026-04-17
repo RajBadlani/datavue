@@ -31,6 +31,13 @@ export interface QueryResult {
   fields: string[]
 }
 
+export interface TablePreviewOptions {
+  schemaName: string
+  tableName: string
+  limit: number
+  orderBy?: string[]
+}
+
 export interface ConnectionCredentials {
   host: string
   port: number
@@ -44,6 +51,7 @@ export interface DatabaseDriver {
   testConnection(): Promise<{ success: boolean; latencyMs: number }>
   syncMetadata(): Promise<TableMetadata[]>
   executeQuery(sql: string): Promise<QueryResult>
+  previewTable(options: TablePreviewOptions): Promise<QueryResult>
   getRowCount(tableName: string): Promise<number>
   disconnect(): Promise<void>
 }

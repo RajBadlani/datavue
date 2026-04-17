@@ -6,6 +6,7 @@ import {
     ColumnMetadata,
     ForeignKeyMetadata,
     QueryResult,
+    TablePreviewOptions,
 } from "./base.driver";
 
 const QUERY_TIMEOUT_MS = 30_000;
@@ -14,6 +15,10 @@ const POOL_MAX = 5;
 
 export class PostgresDriver implements DatabaseDriver {
     private pool: Pool;
+
+    private quoteIdentifier(value: string): string {
+        return `"${value.replace(/"/g, '""')}"`;
+    }
 
     private normalizeEnumValues(value: unknown): string[] | null {
         if (!Array.isArray(value)) {
@@ -305,6 +310,34 @@ export class PostgresDriver implements DatabaseDriver {
                 rows,
                 rowCount: rows.length,
                 fields,
+            };
+        } finally {
+            client?.release();
+        }
+    }
+
+    async previewTable(options: TablePreviewOptions): Promise<QueryResult> {
+        let client: PoolClient | null = null;
+
+        try {
+            client = await this.pool.connect();
+
+            await client.query(`SET statement_timeout = ${QUERY_TIMEOUT_MS}`);
+
+            const safeLimit = Math.max(1, Math.floor(options.limit));
+            const qualifiedTableName = `${this.quoteIdentifier(options.schemaName)}.${this.quoteIdentifier(options.tableName)}`;
+            const orderByClause = options.orderBy?.length
+                ? ` ORDER BY ${options.orderBy.map((column) => this.quoteIdentifier(column)).join(", ")}`
+                : "";
+
+            const result = await client.query(
+                `SELECT * FROM ${qualifiedTableName}${orderByClause} LIMIT ${safeLimit + 1}`,
+            );
+
+            return {
+                rows: result.rows,
+                rowCount: result.rows.length,
+                fields: result.fields.map((field) => field.name),
             };
         } finally {
             client?.release();
