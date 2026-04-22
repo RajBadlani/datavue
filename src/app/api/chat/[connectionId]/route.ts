@@ -162,6 +162,7 @@ export async function POST(
 
             case 'executeSQL':
               if (nodeOutput.queryResult) {
+                send('results', { queryResult: nodeOutput.queryResult })
                 send('status', {
                   message: `Query returned ${nodeOutput.queryResult.rowCount} rows`,
                 })
@@ -173,6 +174,8 @@ export async function POST(
               }
               break
 
+            case 'generateGeneralResponse':
+            case 'generateSchemaResponse':
             case 'generateResponse':
               if (nodeOutput.finalResponse) {
                 finalResponse = nodeOutput.finalResponse
