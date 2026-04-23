@@ -53,13 +53,25 @@ function MobileNavItem({ item, active }: { item: (typeof appNavItems)[number]; a
   )
 }
 
+function isNavItemActive(pathname: string, href: string) {
+  return pathname === href || pathname.startsWith(`${href}/`)
+}
+
+function getPageTitle(pathname: string) {
+  if (pathname.endsWith('/chat') || pathname.startsWith('/chat/')) {
+    return 'Connection Chat'
+  }
+
+  return appPageTitles[pathname] ?? 'Connections'
+}
+
 export function AppShell({ children, user }: AppShellProps) {
   const pathname = usePathname()
   const router = useRouter()
   const [alertsOpen, setAlertsOpen] = useState(false)
   const [profileOpen, setProfileOpen] = useState(false)
 
-  const pageTitle = appPageTitles[pathname] ?? 'Connections'
+  const pageTitle = getPageTitle(pathname)
   const userName = user.name || 'Datavue User'
   const userEmail = user.email
 
@@ -89,7 +101,7 @@ export function AppShell({ children, user }: AppShellProps) {
 
             <nav className="mt-5 flex flex-col gap-1">
               {appNavItems.map(item => {
-                const active = pathname === item.href
+                const active = isNavItemActive(pathname, item.href)
                 return (
                   <Link
                     key={item.href}
@@ -213,7 +225,7 @@ export function AppShell({ children, user }: AppShellProps) {
       >
         <div className="mx-auto flex max-w-md gap-1">
           {appNavItems.map(item => (
-            <MobileNavItem key={item.href} item={item} active={pathname === item.href} />
+            <MobileNavItem key={item.href} item={item} active={isNavItemActive(pathname, item.href)} />
           ))}
         </div>
       </nav>
