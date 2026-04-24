@@ -55,9 +55,9 @@ export function LandingPage() {
   }, [])
 
   return (
-    <main className="bg-[#F7F4EB] text-[#313852]">
+    <main className="w-full max-w-full overflow-x-hidden bg-[#F7F4EB] text-[#313852]">
       <Header scrolled={scrolled} onOpenMenu={() => setMenuOpen(true)} />
-      <HeroSection />
+      <HeroSection onOpenDemo={() => setDemoOpen(true)} />
       <TrustStrip />
       <SelfHealingSection />
       <PainPointsSection />

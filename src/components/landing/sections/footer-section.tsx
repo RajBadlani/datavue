@@ -20,7 +20,7 @@ export function FooterSection() {
           <FooterColumn title="Legal" links={['Privacy Policy', 'Terms of Service', 'Security', 'Cookie Preferences']} />
         </div>
 
-        <p className="mt-12 border-t border-[#C2CBD4] pt-6 text-sm text-[#7B7E8F]">© 2026 Datavue · Built with Anthropic Claude · Hosted on AWS</p>
+        <p className="mt-12 border-t border-[#C2CBD4] pt-6 text-sm text-[#7B7E8F]">© 2026 Datavue. Natural-language database intelligence for auditable teams.</p>
       </div>
     </footer>
   )

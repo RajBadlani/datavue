@@ -9,24 +9,31 @@ const auditEvents = [
 
 export function SelfHealingSection() {
   return (
-    <section id="self-healing" className="bg-[#F7F4EB] py-24 scroll-mt-24">
+    <section id="self-healing" className="scroll-mt-28 bg-[#F7F4EB] py-24 sm:py-32">
       <div className="mx-auto max-w-7xl px-6">
-        <Reveal className="grid gap-8 lg:grid-cols-[0.8fr_1.2fr] lg:items-end">
+        <Reveal className="max-w-5xl">
           <div>
             <SectionLabel>SELF-HEALING SQL</SectionLabel>
-            <h2 className="mt-4 max-w-2xl font-display text-4xl tracking-[-0.05em] text-[#313852] sm:text-[52px]">
-              Failed SQL becomes an auditable correction.
+            <h2 className="mt-3 max-w-4xl text-[clamp(2rem,3.2vw,3rem)] font-semibold leading-[1.04] tracking-[-0.04em] text-[#313852]">
+              Every failed query leaves a repair trail.
             </h2>
+            <p className="mt-4 max-w-3xl text-base leading-7 text-[#5F6475] sm:text-lg sm:leading-8">
+              Datavue records the failed attempt, detects the schema mismatch, retries safely, and shows the correction path before the answer is trusted.
+            </p>
           </div>
-          <p className="max-w-2xl text-lg leading-8 text-[#7B7E8F]">
-            Datavue does not hide broken queries. It records the failed attempt, diagnoses the schema mismatch, retries safely, and shows the correction path before the answer is trusted.
-          </p>
+          <div className="mt-5 flex flex-wrap gap-3">
+            {['2 attempts', 'schema mismatch fixed', 'audit record saved'].map(item => (
+              <span key={item} className="rounded-full border border-[#C2CBD4] bg-[#FCFAF5] px-4 py-2 text-sm font-semibold text-[#313852]">
+                {item}
+              </span>
+            ))}
+          </div>
         </Reveal>
 
-        <Reveal className="mt-14 rounded-[2rem] border border-[#C2CBD4] bg-[#FCFAF5] p-4 shadow-[0_24px_80px_rgba(49,56,82,0.08)] sm:p-6">
+        <Reveal className="mt-8 rounded-[2rem] border border-[#C2CBD4] bg-[#FCFAF5] p-4 shadow-[0_24px_80px_rgba(49,56,82,0.08)] sm:p-6">
           <div className="grid gap-5 xl:grid-cols-[1fr_0.95fr]">
             <div className="grid gap-5">
-              <div className="rounded-[1.5rem] border border-[#F1D7D7] bg-[#FFF1EF] p-5">
+              <div className="rounded-[1.5rem] border border-[#F1D7D7] bg-[#FFF1EF] p-5 transition duration-500 hover:-translate-y-1 sm:p-6">
                 <div className="flex flex-wrap items-center justify-between gap-3">
                   <span className="rounded-full bg-[#F5B6B0] px-3 py-1 text-xs font-semibold text-[#9F2F25]">Attempt 1 failed</span>
                   <span className="text-xs font-semibold uppercase tracking-[0.24em] text-[#9F2F25]">schema mismatch</span>
@@ -40,7 +47,7 @@ ORDER BY churn_risk DESC;`}</pre>
                 </p>
               </div>
 
-              <div className="rounded-[1.5rem] border border-[#CFE7D7] bg-[#F3FBF6] p-5">
+              <div className="rounded-[1.5rem] border border-[#CFE7D7] bg-[#F3FBF6] p-5 transition duration-500 hover:-translate-y-1 sm:p-6">
                 <div className="flex flex-wrap items-center justify-between gap-3">
                   <span className="rounded-full bg-[#E4F0E8] px-3 py-1 text-xs font-semibold text-[#1C6B3C]">Attempt 2 succeeded</span>
                   <span className="text-xs font-semibold uppercase tracking-[0.24em] text-[#1C6B3C]">read-only retry</span>
@@ -59,7 +66,7 @@ ORDER BY churn_risk DESC;`}</pre>
               </div>
             </div>
 
-            <div className="rounded-[1.5rem] border border-[#C2CBD4] bg-[#F7F4EB] p-5">
+            <div className="rounded-[1.5rem] border border-[#C2CBD4] bg-[#F7F4EB] p-5 sm:p-6">
               <div className="flex flex-wrap items-center justify-between gap-3 border-b border-[#C2CBD4] pb-4">
                 <div>
                   <p className="text-xs font-semibold uppercase tracking-[0.28em] text-[#7B7E8F]">Audit record</p>

@@ -13,8 +13,8 @@ const resultRows = [
 
 export function HeroAnimator() {
   return (
-    <div className="w-full max-w-[42rem] rounded-[1.5rem] border border-[#C2CBD4] bg-[#F3EEE3] p-3 shadow-[0_30px_90px_rgba(49,56,82,0.1)] sm:rounded-[2rem] sm:p-5">
-      <div className="rounded-[1.25rem] border border-[#C2CBD4] bg-[#FCFAF5] p-3 sm:rounded-[1.75rem] sm:p-5">
+    <div className="group w-full max-w-[42rem] rotate-[-1deg] rounded-[1.5rem] border border-[#C2CBD4] bg-[#F3EEE3] p-3 shadow-[0_30px_90px_rgba(49,56,82,0.12)] transition duration-700 hover:rotate-0 sm:rounded-[2rem] sm:p-5">
+      <div className="rounded-[1.25rem] border border-[#C2CBD4] bg-[#FCFAF5] p-3 transition-transform duration-700 group-hover:scale-[1.01] sm:rounded-[1.75rem] sm:p-5">
         <div className="flex flex-col gap-3 border-b border-[#E5E0D4] pb-4 sm:flex-row sm:items-start sm:justify-between">
           <div>
             <p className="text-xs font-semibold uppercase tracking-[0.28em] text-[#7B7E8F]">Query receipt</p>
@@ -22,7 +22,7 @@ export function HeroAnimator() {
               Which enterprise accounts have rising churn risk after the pricing change?
             </p>
           </div>
-          <span className="w-fit rounded-full bg-[#EDEAFF] px-3 py-1 text-xs font-semibold text-[#5849F2]">READ-ONLY</span>
+          <span className="w-fit rounded-full bg-[#EDEAFF] px-3 py-1 text-xs font-semibold text-[#5849F2]">read-only</span>
         </div>
 
         <div className="mt-4 grid gap-4 lg:grid-cols-[1fr_0.78fr]">

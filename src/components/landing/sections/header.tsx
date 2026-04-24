@@ -11,10 +11,10 @@ type HeaderProps = {
 export function Header({ scrolled, onOpenMenu }: HeaderProps) {
   return (
     <header
-      className={`fixed left-4 right-4 top-4 z-50 transition-all duration-300 ${
+      className={`sticky top-3 z-50 mx-3 transition-all duration-300 sm:top-4 sm:mx-4 ${
         scrolled
-          ? 'rounded-full border border-[#C2CBD4] bg-[#FCFAF5] shadow-[0_12px_36px_rgba(49,56,82,0.08)]'
-          : 'bg-transparent'
+          ? 'rounded-[1.75rem] border border-[#C2CBD4] bg-[#FCFAF5]/95 shadow-[0_12px_36px_rgba(49,56,82,0.08)] sm:rounded-full'
+          : 'rounded-[1.75rem] border border-transparent bg-[#F7F4EB]/70 backdrop-blur-sm sm:rounded-full'
       }`}
     >
       <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-4 py-3 sm:px-6">

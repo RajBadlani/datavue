@@ -4,12 +4,12 @@ const boundaryNodes = ['Datavue app', 'Worker', 'Redis', 'Postgres', 'Ollama', '
 
 export function EnterpriseSection({ onOpenEnterprise }: { onOpenEnterprise: () => void }) {
   return (
-    <section id="security" className="bg-[#313852] py-24 text-[#F7F4EB] scroll-mt-24">
+    <section id="security" className="scroll-mt-28 bg-[#313852] py-24 text-[#F7F4EB] sm:py-32">
       <div className="mx-auto grid max-w-7xl gap-12 px-6 lg:grid-cols-[0.86fr_1.14fr] lg:items-center">
         <Reveal>
           <SectionLabel>PRIVACY BOUNDARY</SectionLabel>
-          <h2 className="mt-4 max-w-2xl font-display text-4xl tracking-[-0.05em] text-[#F7F4EB] sm:text-[52px]">
-            Run the intelligence where your data already lives.
+          <h2 className="mt-3 max-w-xl text-[clamp(2.375rem,4vw,3.625rem)] font-semibold leading-[1.03] tracking-[-0.045em] text-[#F7F4EB]">
+            Keep private data inside your infrastructure.
           </h2>
           <p className="mt-6 max-w-2xl text-lg leading-8 text-[#D7D9E2]">
             Enterprise deployments can keep the app, worker, operational database, and local model runtime inside your infrastructure. The product story stays the same; the data boundary changes completely.
@@ -17,7 +17,7 @@ export function EnterpriseSection({ onOpenEnterprise }: { onOpenEnterprise: () =
 
           <div className="mt-8 flex flex-wrap gap-3">
             {['No data egress', 'Ollama-ready', 'Audit controls'].map(item => (
-              <span key={item} className="rounded-full border border-[#7E8498] px-4 py-2 text-sm font-medium text-[#F7F4EB]">
+                <span key={item} className="rounded-full border border-[#7E8498] bg-[#3A4058] px-4 py-2 text-sm font-medium text-[#F7F4EB]">
                 {item}
               </span>
             ))}
@@ -45,7 +45,7 @@ export function EnterpriseSection({ onOpenEnterprise }: { onOpenEnterprise: () =
 
               <div className="mt-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
                 {boundaryNodes.map(item => (
-                  <div key={item} className="rounded-2xl border border-[#5D647D] bg-[#3A4058] p-4 text-sm font-semibold text-[#F7F4EB]">
+                  <div key={item} className="rounded-2xl border border-[#5D647D] bg-[#3A4058] p-4 text-sm font-semibold text-[#F7F4EB] transition duration-500 hover:-translate-y-1">
                     {item}
                   </div>
                 ))}

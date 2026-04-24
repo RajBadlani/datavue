@@ -12,22 +12,22 @@ export function PricingSection({ annualBilling, onChangeAnnualBilling, openFaq, 
   const proPrice = annualBilling ? '$39' : '$49'
 
   return (
-    <section id="pricing" className="bg-[#F7F4EB] py-24">
+    <section id="pricing" className="scroll-mt-28 bg-[#F7F4EB] py-24 sm:py-32">
       <div className="mx-auto max-w-7xl px-6">
-        <Reveal className="text-center">
+        <Reveal>
           <SectionLabel>PRICING</SectionLabel>
-          <h2 className="mt-4 font-display text-4xl tracking-[-0.05em] text-[#313852] sm:text-5xl">
-            Simple pricing. Serious capability.
+          <h2 className="mt-3 max-w-xl text-[clamp(2.375rem,4vw,3.625rem)] font-semibold leading-[1.03] tracking-[-0.045em] text-[#313852]">
+            Start small, scale into team analytics.
           </h2>
         </Reveal>
 
         <div className="mt-8 flex justify-center">
-          <div className="inline-flex rounded-full border border-[#C2CBD4] bg-white p-1">
+          <div className="inline-flex rounded-full border border-[#C2CBD4] bg-[#FCFAF5] p-1">
             <button
               type="button"
               onClick={() => onChangeAnnualBilling(false)}
               className={`cursor-pointer rounded-full px-5 py-2 text-sm font-semibold transition ${
-                !annualBilling ? 'bg-[#313852] text-white' : 'text-[#5F6475]'
+                !annualBilling ? 'bg-[#313852] text-[#F7F4EB]' : 'text-[#5F6475]'
               }`}
             >
               Monthly
@@ -36,7 +36,7 @@ export function PricingSection({ annualBilling, onChangeAnnualBilling, openFaq, 
               type="button"
               onClick={() => onChangeAnnualBilling(true)}
               className={`cursor-pointer rounded-full px-5 py-2 text-sm font-semibold transition ${
-                annualBilling ? 'bg-[#313852] text-white' : 'text-[#5F6475]'
+                annualBilling ? 'bg-[#313852] text-[#F7F4EB]' : 'text-[#5F6475]'
               }`}
             >
               Annual <span className="ml-2 rounded-full bg-[#EDEAFF] px-2 py-1 text-xs text-[#5849F2]">Save 20%</span>
@@ -57,7 +57,7 @@ export function PricingSection({ annualBilling, onChangeAnnualBilling, openFaq, 
           <PricingCard title="Enterprise" price="Custom" description="For regulated teams and on-prem deployments." features={enterpriseFeatures} buttonLabel="Contact sales" />
         </div>
 
-        <Reveal className="mt-12 rounded-[2rem] border border-[#C2CBD4] bg-white p-6">
+        <Reveal className="mt-12 rounded-[2rem] border border-[#C2CBD4] bg-[#FCFAF5] p-6">
           <h3 className="text-lg font-semibold text-[#313852]">Common questions about pricing</h3>
           <div className="mt-6 divide-y divide-[#E5E8EE]">
             {faqs.map((item, index) => {

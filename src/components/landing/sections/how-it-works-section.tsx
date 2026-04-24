@@ -5,7 +5,7 @@ import { NumberTicker, Reveal, SectionLabel } from '@/components/landing/ui'
 function HowItWorksPanel({ activeStep }: { activeStep: number }) {
   if (activeStep === 0) {
     return (
-      <div className="space-y-5 rounded-[1.5rem] border border-[#C2CBD4] bg-white p-4 shadow-[0_24px_80px_rgba(49,56,82,0.08)] sm:rounded-[2rem] sm:p-6">
+        <div className="space-y-5 rounded-[1.5rem] border border-[#C2CBD4] bg-[#FCFAF5] p-4 shadow-[0_24px_80px_rgba(49,56,82,0.08)] sm:rounded-[2rem] sm:p-6">
         <div className="flex flex-col gap-3 rounded-2xl border border-[#C2CBD4] bg-[#F7F4EB] px-4 py-3 sm:flex-row sm:items-center sm:justify-between">
           <div>
             <p className="text-sm font-semibold text-[#313852]">Connect a data source</p>
@@ -17,7 +17,7 @@ function HowItWorksPanel({ activeStep }: { activeStep: number }) {
         </div>
         <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
           {['Postgres', 'MySQL', 'SQLite', 'MongoDB'].map(item => (
-            <div key={item} className="rounded-2xl border border-[#C2CBD4] bg-white px-4 py-5 text-center text-sm font-medium text-[#313852]">
+            <div key={item} className="rounded-2xl border border-[#C2CBD4] bg-[#FCFAF5] px-4 py-5 text-center text-sm font-medium text-[#313852]">
               {item}
             </div>
           ))}
@@ -48,7 +48,7 @@ function HowItWorksPanel({ activeStep }: { activeStep: number }) {
 
   if (activeStep === 1) {
     return (
-      <div className="space-y-5 rounded-[1.5rem] border border-[#C2CBD4] bg-white p-4 shadow-[0_24px_80px_rgba(49,56,82,0.08)] sm:rounded-[2rem] sm:p-6">
+        <div className="space-y-5 rounded-[1.5rem] border border-[#C2CBD4] bg-[#FCFAF5] p-4 shadow-[0_24px_80px_rgba(49,56,82,0.08)] sm:rounded-[2rem] sm:p-6">
         <div className="rounded-3xl border border-[#C2CBD4] bg-[#F7F4EB] p-4">
           <p className="text-xs uppercase tracking-[0.3em] text-[#7B7E8F]">Ask Datavue</p>
           <p className="mt-3 text-lg text-[#313852]">Show me expansion revenue from enterprise accounts by quarter</p>
@@ -60,11 +60,11 @@ function HowItWorksPanel({ activeStep }: { activeStep: number }) {
           GROUP BY quarter ORDER BY quarter;
         </div>
         <div className="grid gap-3 sm:grid-cols-2">
-          <div className="rounded-2xl border border-[#C2CBD4] bg-white p-4">
+          <div className="rounded-2xl border border-[#C2CBD4] bg-[#FCFAF5] p-4">
             <p className="text-xs uppercase tracking-[0.3em] text-[#7B7E8F]">schema confidence</p>
             <NumberTicker value={98.4} decimals={1} suffix="%" className="mt-3 block text-3xl font-semibold text-[#313852]" />
           </div>
-          <div className="rounded-2xl border border-[#C2CBD4] bg-white p-4">
+          <div className="rounded-2xl border border-[#C2CBD4] bg-[#FCFAF5] p-4">
             <p className="text-xs uppercase tracking-[0.3em] text-[#7B7E8F]">generation time</p>
             <NumberTicker value={142} suffix="ms" className="mt-3 block text-3xl font-semibold text-[#313852]" />
           </div>
@@ -74,7 +74,7 @@ function HowItWorksPanel({ activeStep }: { activeStep: number }) {
   }
 
   return (
-    <div className="space-y-5 rounded-[1.5rem] border border-[#C2CBD4] bg-white p-4 shadow-[0_24px_80px_rgba(49,56,82,0.08)] sm:rounded-[2rem] sm:p-6">
+    <div className="space-y-5 rounded-[1.5rem] border border-[#C2CBD4] bg-[#FCFAF5] p-4 shadow-[0_24px_80px_rgba(49,56,82,0.08)] sm:rounded-[2rem] sm:p-6">
       <div className="rounded-3xl border border-[#C2CBD4] bg-[#F7F4EB] p-5">
         <div className="flex items-center justify-between border-b border-[#C2CBD4] pb-3 text-sm font-medium text-[#313852]">
           <span>Result table</span>
@@ -86,7 +86,7 @@ function HowItWorksPanel({ activeStep }: { activeStep: number }) {
             ['Product A', '$280K', '+9%'],
             ['Product C', '$224K', '+5%'],
           ].map(([product, revenue, change]) => (
-            <div key={product} className="grid grid-cols-[1fr_auto] gap-2 rounded-2xl bg-white px-4 py-3 text-[#313852] sm:grid-cols-[1.2fr_1fr_auto] sm:items-center">
+            <div key={product} className="grid grid-cols-[1fr_auto] gap-2 rounded-2xl bg-[#FCFAF5] px-4 py-3 text-[#313852] sm:grid-cols-[1.2fr_1fr_auto] sm:items-center">
               <span>{product}</span>
               <span>{revenue}</span>
               <span className="col-span-2 text-[#1C6B3C] sm:col-span-1">{change}</span>
@@ -110,12 +110,12 @@ type HowItWorksSectionProps = {
 
 export function HowItWorksSection({ activeStep, stepRefs }: HowItWorksSectionProps) {
   return (
-    <section className="bg-[#F7F4EB] py-20 sm:py-24">
+    <section className="scroll-mt-28 bg-[#F7F4EB] py-24 sm:py-32">
       <div className="mx-auto grid max-w-7xl gap-10 px-6 lg:grid-cols-[0.9fr_1.1fr] lg:gap-12">
         <div>
           <SectionLabel>HOW DATAVUE WORKS</SectionLabel>
-          <h2 className="mt-4 max-w-xl font-display text-4xl tracking-[-0.05em] text-[#313852] sm:text-5xl">
-            From question to insight. No SQL required.
+          <h2 className="mt-3 max-w-xl text-[clamp(2.375rem,4vw,3.625rem)] font-semibold leading-[1.03] tracking-[-0.045em] text-[#313852]">
+            From plain English to trusted analytics.
           </h2>
           <div className="mt-10 space-y-4 sm:mt-12 sm:space-y-10">
             {steps.map((step, index) => (
@@ -132,14 +132,14 @@ export function HowItWorksSection({ activeStep, stepRefs }: HowItWorksSectionPro
                 ) : null}
                 <span className={`mb-4 flex h-9 w-9 items-center justify-center rounded-full border text-sm font-semibold transition-all duration-300 sm:absolute sm:left-0 sm:top-0 sm:mb-0 ${
                   activeStep === index
-                    ? 'border-[#5849F2] bg-[#5849F2] text-white'
-                    : 'border-[#C2CBD4] bg-white text-[#7B7E8F]'
+                    ? 'border-[#5849F2] bg-[#5849F2] text-[#FCFAF5]'
+                    : 'border-[#C2CBD4] bg-[#FCFAF5] text-[#7B7E8F]'
                 }`}>
                   {index + 1}
                 </span>
                 <Reveal>
                   <p className="text-sm font-medium text-[#5849F2]">{step.detail}</p>
-              <h3 className="mt-3 text-2xl font-semibold text-[#313852]">{step.title}</h3>
+                  <h3 className="mt-3 text-2xl font-semibold text-[#313852]">{step.title}</h3>
                   <p className="mt-3 max-w-xl text-base leading-7 text-[#7B7E8F]">{step.description}</p>
                 </Reveal>
               </div>

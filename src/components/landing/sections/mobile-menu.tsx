@@ -26,7 +26,7 @@ export function MobileMenu({ open, onClose }: MobileMenuProps) {
 
         <nav className="mt-8 flex flex-col gap-4">
           {navLinks.map(link => (
-            <a key={link.label} href={link.href} onClick={onClose} className="rounded-2xl border border-[#C2CBD4] bg-white px-4 py-3 text-base font-medium text-[#313852]">
+            <a key={link.label} href={link.href} onClick={onClose} className="rounded-2xl border border-[#C2CBD4] bg-[#FCFAF5] px-4 py-3 text-base font-medium text-[#313852]">
               {link.label}
             </a>
           ))}

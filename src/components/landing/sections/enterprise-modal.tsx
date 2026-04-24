@@ -31,7 +31,7 @@ export function EnterpriseModal({ open, onClose }: EnterpriseModalProps) {
           What matters most?
           <textarea className="min-h-28 rounded-2xl border border-[#C2CBD4] bg-[#F7F4EB] px-4 py-3 outline-none transition focus:border-[#5849F2]" placeholder="On-prem deployment, SSO, private inference, support timelines..." />
         </label>
-        <button type="submit" className="mt-2 cursor-pointer rounded-full bg-[#5849F2] px-6 py-3 font-semibold text-white">
+        <button type="submit" className="mt-2 cursor-pointer rounded-full bg-[#5849F2] px-6 py-3 font-semibold text-[#FCFAF5] shadow-[0_14px_30px_rgba(88,73,242,0.22)]">
           Request enterprise follow-up
         </button>
       </form>
