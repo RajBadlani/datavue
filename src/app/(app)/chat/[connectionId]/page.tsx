@@ -1,17 +1,83 @@
+import { redirect } from 'next/navigation'
+import prisma from '@/lib/prisma'
+import { requireCurrentUser } from '@/lib/server/resolve-user'
+import { ChatView } from '@/components/chat/chat-view'
+import type { ChatMessage } from '@/components/chat/use-chat-stream'
+
 type ChatPageProps = {
   params: Promise<{ connectionId: string }>
 }
 
 export default async function ChatPage({ params }: ChatPageProps) {
   const { connectionId } = await params
+  const user = await requireCurrentUser()
+
+  // Verify connection ownership
+  const connection = await prisma.connection.findFirst({
+    where: {
+      id: connectionId,
+      userId: user.id,
+      isArchived: false,
+    },
+    select: {
+      id: true,
+      label: true,
+      dbType: true,
+      syncStatus: true,
+    },
+  })
+
+  if (!connection) {
+    redirect('/connections')
+  }
+
+  // Load conversation history
+  const conversation = await prisma.conversation.findUnique({
+    where: {
+      connectionId_userId: { connectionId, userId: user.id },
+    },
+    select: { messages: true },
+  })
+
+  // Transform stored messages into ChatMessage format
+  const rawMessages = (conversation?.messages ?? []) as unknown as Array<{
+    role: 'user' | 'assistant'
+    content: string
+    sql?: string
+    timestamp: string
+  }>
+
+  const initialMessages: ChatMessage[] = rawMessages.map((msg, idx) => ({
+    id: `history-${idx}`,
+    role: msg.role,
+    content: msg.content,
+    timestamp: msg.timestamp,
+    ...(msg.role === 'assistant'
+      ? {
+          turn: {
+            reasoning: [],
+            sql: msg.sql ?? null,
+            sqlAttempt: null,
+            chartConfig: null,
+            queryResult: null,
+            response: msg.content,
+            error: null,
+            isBlocked: false,
+          },
+        }
+      : {}),
+  }))
 
   return (
-    <div className="px-6 py-6 sm:px-8 lg:px-10">
-      <div className="rounded-[24px] border border-[#C2CBD4] bg-white p-8">
-        <p className="text-[11px] font-semibold uppercase tracking-[0.28em] text-[#5849F2]">Chat</p>
-        <h1 className="mt-4 font-display text-[32px] leading-none tracking-[-0.05em] text-[#313852]">Connection mounted</h1>
-        <p className="mt-4 text-[15px] leading-7 text-[#7B7E8F]">Chat route placeholder for connection <span className="font-mono text-[#313852]">{connectionId}</span>. This keeps the Open Chat flow functional from the new connections UX.</p>
-      </div>
-    </div>
+    <ChatView
+      connectionId={connectionId}
+      connection={{
+        id: connection.id,
+        label: connection.label,
+        dbType: connection.dbType,
+        syncStatus: connection.syncStatus,
+      }}
+      initialMessages={initialMessages}
+    />
   )
 }
