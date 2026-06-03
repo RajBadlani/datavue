@@ -11,7 +11,8 @@
     "start": "next start",
     "test": "tsx --test tests/*.test.ts",
     "lint": "eslint",
-    "prisma:seed": "ts-node --compiler-options {\"module\":\"CommonJS\"} prisma/seed.ts"
+    "prisma:seed": "ts-node --compiler-options {\"module\":\"CommonJS\"} prisma/seed.ts",
+    "postinstall": "prisma generate"
   },
   "dependencies": {
     "@ai-sdk/anthropic": "^3.0.66",
@@ -26,7 +27,6 @@
     "dotenv": "^17.4.0",
     "ioredis": "^5.10.1",
     "next": "16.2.2",
-    "ollama-ai-provider": "^1.2.0",
     "pg": "^8.20.0",
     "prisma": "^7.6.0",
     "react": "19.2.4",
