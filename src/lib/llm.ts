@@ -3,7 +3,7 @@ import { anthropic } from '@ai-sdk/anthropic'
 import { groq } from '@ai-sdk/groq'
 import { generateText } from 'ai'
 
-export type SupportedLLMProvider = 'ANTHROPIC' | 'OLLAMA' | 'GROQ'
+export type SupportedLLMProvider = 'ANTHROPIC' | 'GROQ'
 
 export interface LLMMessage {
   role: 'user' | 'assistant'
@@ -40,12 +40,11 @@ function getProvider(): SupportedLLMProvider {
 
   switch (provider) {
     case 'ANTHROPIC':
-    case 'OLLAMA':
     case 'GROQ':
       return provider
     default:
       throw new Error(
-        `Unknown LLM_PROVIDER: "${provider}". Must be ANTHROPIC, OLLAMA, or GROQ.`
+        `Unknown LLM_PROVIDER: "${provider}". Must be ANTHROPIC or GROQ.`
       )
   }
 }
@@ -85,30 +84,6 @@ async function getModel(): Promise<ResolvedModel> {
         model: toLanguageModel(groq(modelId)),
         provider,
         modelId,
-      }
-    }
-
-    case 'OLLAMA': {
-      const modelId = process.env.OLLAMA_MODEL?.trim() || 'sqlcoder'
-
-      try {
-        const { ollama } = await import('ollama-ai-provider')
-
-        return {
-          model: toLanguageModel(ollama(modelId)),
-          provider,
-          modelId,
-        }
-      } catch (error) {
-        if (error instanceof Error) {
-          throw new Error(
-            `Failed to load Ollama provider. Install \`ollama-ai-provider\` to use LLM_PROVIDER=OLLAMA. ${error.message}`
-          )
-        }
-
-        throw new Error(
-          'Failed to load Ollama provider. Install `ollama-ai-provider` to use LLM_PROVIDER=OLLAMA.'
-        )
       }
     }
   }
