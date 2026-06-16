@@ -72,6 +72,7 @@ export async function auditLog(
                 chartType,
                 status,
                 errorMessage,
+                maskedColumns: state.maskedColumns ?? [],
             },
         });
 

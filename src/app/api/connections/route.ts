@@ -17,13 +17,15 @@ interface CreateConnectionBody {
   password: string;
   database: string;
   ssl: boolean;
+  sslRejectUnauthorized?: boolean;
+  caCert?: string;
 }
 
 export const POST = withErrorHandler(async (req: NextRequest) => {
   const user = await requireCurrentUser()
 
   const body = (await req.json()) as CreateConnectionBody;
-  const { label, dbType, host, port, user: dbUser, password, database, ssl } = body;
+  const { label, dbType, host, port, user: dbUser, password, database, ssl, sslRejectUnauthorized, caCert } = body;
 
   if (!label || !dbType || !host || !port || !dbUser || !password || !database) {
     throw new ApiError(
@@ -54,6 +56,8 @@ export const POST = withErrorHandler(async (req: NextRequest) => {
     password,
     database,
     ssl: Boolean(ssl),
+    ...(typeof sslRejectUnauthorized === "boolean" ? { sslRejectUnauthorized } : {}),
+    ...(caCert ? { caCert } : {}),
   };
 
   const driver = createDriver(dbType, credentials);
@@ -71,14 +75,9 @@ export const POST = withErrorHandler(async (req: NextRequest) => {
     await driver.disconnect();
   }
 
-  const encryptedCredentials = encryptObject({
-    host,
-    port: Number(port),
-    user: dbUser,
-    password,
-    database,
-    ssl: Boolean(ssl),
-  });
+  // Encrypt the same credentials object that was just validated so the stored
+  // blob and the tested config never drift (incl. optional SSL CA / verify flag).
+  const encryptedCredentials = encryptObject(credentials);
 
   const connection = await prisma.connection.create({
     data: {
@@ -140,6 +139,9 @@ export const GET = withErrorHandler(async () => {
       lastSyncedAt: true,
       createdAt: true,
       encryptedCredentials: true,
+      _count: {
+        select: { auditLogs: true },
+      },
       schemaMetadata: {
         select: {
           id: true,
@@ -182,6 +184,7 @@ export const GET = withErrorHandler(async () => {
       user: credentials?.user ?? '',
       ssl: credentials?.ssl ?? false,
       tableCount: connection.schemaMetadata.length,
+      totalQueries: connection._count.auditLogs,
       schema: connection.schemaMetadata.map(table => ({
         ...table,
         rowEstimate: table.rowEstimate.toString(),

@@ -5,15 +5,24 @@ import { ChatComposer } from '@/components/chat/chat-composer'
 import { ChatEmptyState } from '@/components/chat/chat-empty-state'
 import { ChatHeader } from '@/components/chat/chat-header'
 import { ChatThread } from '@/components/chat/chat-thread'
-import { useChatStream, type ChatMessage } from '@/components/chat/use-chat-stream'
+import {
+  useChatStream,
+  type ChatMessage,
+  type ChatChartConfig,
+  type ChatQueryResult,
+} from '@/components/chat/use-chat-stream'
 
 type SyncStatus = 'PENDING' | 'SYNCING' | 'SYNCED' | 'FAILED'
 
-type ConversationMessage = {
+export type StoredConversationMessage = {
   role: 'user' | 'assistant'
   content: string
   sql?: string
   timestamp: string
+  reasoning?: string[]
+  sqlAttempt?: number
+  chartConfig?: ChatChartConfig | null
+  queryResult?: ChatQueryResult | null
 }
 
 type ChatConnection = {
@@ -26,7 +35,7 @@ type ChatConnection = {
 
 type ConnectionChatPageProps = {
   connection: ChatConnection | null
-  initialMessages: ConversationMessage[]
+  initialMessages: StoredConversationMessage[]
 }
 
 type StreamProblem = {
@@ -53,7 +62,7 @@ function getSuggestedPrompts(connection: ChatConnection) {
   ]
 }
 
-function toChatHistory(messages: ConversationMessage[]): ChatMessage[] {
+function toChatHistory(messages: StoredConversationMessage[]): ChatMessage[] {
   return messages.map((message, index) => ({
     id: `history-${index}`,
     role: message.role,
@@ -62,11 +71,11 @@ function toChatHistory(messages: ConversationMessage[]): ChatMessage[] {
     ...(message.role === 'assistant'
       ? {
           turn: {
-            reasoning: [],
+            reasoning: message.reasoning ?? [],
             sql: message.sql ?? null,
-            sqlAttempt: null,
-            chartConfig: null,
-            queryResult: null,
+            sqlAttempt: message.sqlAttempt ?? null,
+            chartConfig: message.chartConfig ?? null,
+            queryResult: message.queryResult ?? null,
             response: message.content,
             error: null,
             isBlocked: false,

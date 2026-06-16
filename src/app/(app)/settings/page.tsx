@@ -1,10 +1,19 @@
-export default function SettingsPage() {
+import { requireUserOrRedirect } from '@/lib/server/resolve-user'
+import { SettingsView } from '@/components/settings/settings-view'
+
+function formatMemberSince(value: Date) {
+  return value.toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' })
+}
+
+export default async function SettingsPage() {
+  const user = await requireUserOrRedirect()
+
   return (
-    <div className="px-6 py-6 sm:px-8 lg:px-10">
-      <div className="rounded-[24px] border border-[#C2CBD4] bg-white p-8">
-        <h1 className="font-display text-[32px] leading-none tracking-[-0.05em] text-[#313852]">Settings</h1>
-        <p className="mt-4 text-[15px] leading-7 text-[#7B7E8F]">Workspace preferences, security controls, and profile settings can now share the same product chrome.</p>
-      </div>
-    </div>
+    <SettingsView
+      initialName={user.name ?? ''}
+      email={user.email}
+      emailVerified={user.emailVerified}
+      memberSince={formatMemberSince(user.createdAt)}
+    />
   )
 }

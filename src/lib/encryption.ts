@@ -68,8 +68,10 @@ export function decrypt(encryptedString: string): string {
 }
 
 // ─── Encrypt JSON object directly ─────────────────────────────────────────────
-// Convenience wrapper — most callers pass a credentials object, not a string
-export function encryptObject(obj: Record<string, unknown>): string {
+// Convenience wrapper — most callers pass a credentials object, not a string.
+// Accepts any serializable object (typed interfaces included, which do not
+// structurally satisfy Record<string, unknown>).
+export function encryptObject(obj: object): string {
   return encrypt(JSON.stringify(obj));
 }
 

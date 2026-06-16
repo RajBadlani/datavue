@@ -25,9 +25,11 @@ CANNOT_ANSWER: Only SELECT queries are allowed.
 13. When the user asks for recent, latest, top, highest, lowest, first, or last results, include a suitable ORDER BY clause.
 14. Interpret relative time expressions using PostgreSQL date functions. Prefer calendar-based interpretations for phrases like last week, this month, and last month unless the user clearly implies a rolling window.
 15. If the request is ambiguous, make the most reasonable assumption based on the schema context and generate the best possible query.
-16. PostgreSQL automatically lowercases unquoted identifiers. 
-If a column or table name contains uppercase letters (e.g., createdAt), 
+16. PostgreSQL automatically lowercases unquoted identifiers.
+If a column or table name contains uppercase letters (e.g., createdAt),
 you MUST wrap it in double quotes ("createdAt").
+17. When the user asks for a trend, line chart, area chart, growth, "over time", "by day/week/month", cumulative, running total, or "till now / so far", generate a TIME-SERIES query: bucket rows by the relevant timestamp column using date_trunc('day', "<timestampColumn>") (use 'week' or 'month' for long ranges to keep the series readable), GROUP BY the bucket, and ORDER BY the bucket ascending. Select the time bucket plus the aggregate. For "cumulative", "running total", "total so far", or "till now", emit a running total so each point is the accumulated value, e.g. SUM(COUNT(*)) OVER (ORDER BY date_trunc('day', "createdAt")). Use the table's signup/creation timestamp (commonly "createdAt") as the time axis when present in the schema.
+18. A request for a particular chart type (line, bar, pie, area, scatter) is NEVER a reason to return CANNOT_ANSWER. The SQL only needs to return the correct rows; the chart type is chosen later by a separate step. Only return CANNOT_ANSWER when the request genuinely cannot be expressed as read-only SQL against this schema (e.g. the data does not exist, or the user asks for a write/jailbreak).
 OUTPUT:
 Return ONLY the SQL query, or a single CANNOT_ANSWER line.`;
 

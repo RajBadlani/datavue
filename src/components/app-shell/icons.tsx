@@ -20,16 +20,6 @@ export function ChevronDownIcon() {
   )
 }
 
-export function BellIcon() {
-  return (
-    <ShellIcon>
-      <path d="M8 18h8" strokeLinecap="round" />
-      <path d="M10 20a2 2 0 004 0" strokeLinecap="round" />
-      <path d="M6.5 16.5h11c-.9-1-1.5-2.6-1.5-4.8 0-2.7-1.4-5.2-4-5.7V5a1 1 0 10-2 0v.9c-2.6.5-4 3-4 5.7 0 2.2-.6 3.8-1.5 4.9z" strokeLinejoin="round" />
-    </ShellIcon>
-  )
-}
-
 export function SignOutIcon() {
   return (
     <ShellIcon>
@@ -69,15 +59,6 @@ export function HistoryIcon() {
   )
 }
 
-export function ShieldIcon() {
-  return (
-    <ShellIcon>
-      <path d="M12 4l7 3v5c0 4.3-3 7.7-7 8-4-.3-7-3.7-7-8V7l7-3z" />
-      <path d="M9.5 12.5l1.7 1.7 3.3-3.5" strokeLinecap="round" strokeLinejoin="round" />
-    </ShellIcon>
-  )
-}
-
 export function GridIcon() {
   return (
     <ShellIcon>
@@ -86,14 +67,23 @@ export function GridIcon() {
   )
 }
 
+export function ChatIcon() {
+  return (
+    <ShellIcon>
+      <path d="M4 5h16v11H8l-4 4V5z" strokeLinejoin="round" />
+      <path d="M8 9h8M8 12h5" strokeLinecap="round" />
+    </ShellIcon>
+  )
+}
+
 export function getShellNavIcon(name: string) {
   switch (name) {
     case 'database':
       return <DatabaseIcon />
+    case 'chat':
+      return <ChatIcon />
     case 'history':
       return <HistoryIcon />
-    case 'shield':
-      return <ShieldIcon />
     case 'settings':
       return <SettingsIcon />
     default:

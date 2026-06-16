@@ -2,16 +2,10 @@ import prisma from '@/lib/prisma'
 import { requireUserOrRedirect } from '@/lib/server/resolve-user'
 import { ConnectionChatPage } from '@/components/chat'
 import { Prisma } from '@/generated/prisma/client'
+import type { StoredConversationMessage } from '@/components/chat/connection-chat-page'
 
 type ConnectionScopedChatPageProps = {
   params: Promise<{ connectionId: string }>
-}
-
-type StoredConversationMessage = {
-  role: 'user' | 'assistant'
-  content: string
-  sql?: string
-  timestamp: string
 }
 
 export default async function ConnectionScopedChatPage({ params }: ConnectionScopedChatPageProps) {
@@ -75,6 +69,16 @@ export default async function ConnectionScopedChatPage({ params }: ConnectionSco
           content,
           timestamp,
           ...(typeof nextMessage.sql === 'string' ? { sql: nextMessage.sql } : {}),
+          ...(typeof nextMessage.sqlAttempt === 'number' ? { sqlAttempt: nextMessage.sqlAttempt } : {}),
+          ...(Array.isArray(nextMessage.reasoning)
+            ? { reasoning: nextMessage.reasoning.filter((step): step is string => typeof step === 'string') }
+            : {}),
+          ...(nextMessage.chartConfig && typeof nextMessage.chartConfig === 'object'
+            ? { chartConfig: nextMessage.chartConfig as StoredConversationMessage['chartConfig'] }
+            : {}),
+          ...(nextMessage.queryResult && typeof nextMessage.queryResult === 'object'
+            ? { queryResult: nextMessage.queryResult as StoredConversationMessage['queryResult'] }
+            : {}),
         }]
       })
     : []

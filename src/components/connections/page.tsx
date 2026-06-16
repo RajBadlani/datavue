@@ -60,6 +60,7 @@ type ApiConnectionRecord = {
   user?: string
   ssl?: boolean
   tableCount?: number
+  totalQueries?: number
   schema?: Array<{
     id: string
     tableName: string
@@ -164,7 +165,6 @@ export function ConnectionsPage() {
   const searchRef = useRef<HTMLInputElement | null>(null)
   const gridRef = useRef<HTMLDivElement | null>(null)
   const newDialogRef = useRef<HTMLDivElement | null>(null)
-  const upgradeDialogRef = useRef<HTMLDivElement | null>(null)
   const deleteDialogRef = useRef<HTMLDivElement | null>(null)
   const previousFocusRef = useRef<HTMLElement | null>(null)
   const [connections, setConnections] = useState<ConnectionRecord[]>([])
@@ -175,7 +175,6 @@ export function ConnectionsPage() {
   const [sortBy, setSortBy] = useState('recent')
   const [showHealthBanner, setShowHealthBanner] = useState(true)
   const [newDialogOpen, setNewDialogOpen] = useState(false)
-  const [upgradeDialogOpen, setUpgradeDialogOpen] = useState(false)
   const [deleteDialogId, setDeleteDialogId] = useState<string | null>(null)
   const [deleteConfirmation, setDeleteConfirmation] = useState('')
   const [form, setForm] = useState<ConnectionFormState>(createDefaultForm())
@@ -190,10 +189,16 @@ export function ConnectionsPage() {
   const [isLoadingConnections, setIsLoadingConnections] = useState(true)
   const [isRefreshingConnections, setIsRefreshingConnections] = useState(false)
   const [deletingConnectionId, setDeletingConnectionId] = useState<string | null>(null)
+  const [resyncingConnectionId, setResyncingConnectionId] = useState<string | null>(null)
+  const [renameValue, setRenameValue] = useState<string | null>(null)
+  const [isRenaming, setIsRenaming] = useState(false)
+  const [detailHistory, setDetailHistory] = useState<{
+    connectionId: string | null
+    loading: boolean
+    items: Array<{ id: string; query: string; status: string; timestamp: string }>
+  }>({ connectionId: null, loading: false, items: [] })
+  const loadedHistoryRef = useRef<string | null>(null)
   const syncStatusRef = useRef<Record<string, ConnectionRecord['status']>>({})
-
-  const starterConnectionLimit = 3
-  const isStarterLimitReached = connections.length >= starterConnectionLimit
 
   const filteredConnections = useMemo(() => {
     let next = [...connections]
@@ -227,7 +232,7 @@ export function ConnectionsPage() {
       tableCount: connection.tableCount ?? connection.schema?.length ?? 0,
       lastQueried: formatLastQueried(connection.lastSyncedAt),
       createdAt: formatCreatedAt(connection.createdAt),
-      totalQueries: 0,
+      totalQueries: connection.totalQueries ?? 0,
       sslMode: connection.ssl ? 'Require' : 'Disable',
       schema: (connection.schema ?? []).map(table => ({
         name: table.schemaName && table.schemaName !== 'public' ? `${table.schemaName}.${table.tableName}` : table.tableName,
@@ -302,7 +307,7 @@ export function ConnectionsPage() {
   }, [connections, refreshConnections])
 
   useEffect(() => {
-    const activeDialog = newDialogOpen || upgradeDialogOpen || deleteDialogId
+    const activeDialog = newDialogOpen || deleteDialogId
 
     if (activeDialog && !previousFocusRef.current) {
       previousFocusRef.current = document.activeElement instanceof HTMLElement ? document.activeElement : null
@@ -312,19 +317,13 @@ export function ConnectionsPage() {
       previousFocusRef.current.focus()
       previousFocusRef.current = null
     }
-  }, [deleteDialogId, newDialogOpen, upgradeDialogOpen])
+  }, [deleteDialogId, newDialogOpen])
 
   useEffect(() => {
     if (newDialogOpen) {
       newDialogRef.current?.focus()
     }
   }, [newDialogOpen])
-
-  useEffect(() => {
-    if (upgradeDialogOpen) {
-      upgradeDialogRef.current?.focus()
-    }
-  }, [upgradeDialogOpen])
 
   useEffect(() => {
     if (deleteDialogId) {
@@ -336,7 +335,7 @@ export function ConnectionsPage() {
     const onKeyDown = (event: KeyboardEvent) => {
       const target = event.target as HTMLElement | null
       const isEditable = target instanceof HTMLInputElement || target instanceof HTMLTextAreaElement || target?.isContentEditable
-      const activeDialog = newDialogOpen ? newDialogRef.current : upgradeDialogOpen ? upgradeDialogRef.current : deleteDialogId ? deleteDialogRef.current : null
+      const activeDialog = newDialogOpen ? newDialogRef.current : deleteDialogId ? deleteDialogRef.current : null
 
       if (activeDialog && event.key === 'Tab') {
         const focusableElements = Array.from(
@@ -359,11 +358,7 @@ export function ConnectionsPage() {
 
       if (!isEditable && event.key.toLowerCase() === 'n') {
         event.preventDefault()
-        if (isStarterLimitReached) {
-          setUpgradeDialogOpen(true)
-        } else {
-          setNewDialogOpen(true)
-        }
+        setNewDialogOpen(true)
       }
 
       if (!isEditable && event.key.toLowerCase() === 'f') {
@@ -375,7 +370,6 @@ export function ConnectionsPage() {
         setHoveredId(null)
         setSelectedId(null)
         setNewDialogOpen(false)
-        setUpgradeDialogOpen(false)
         setDeleteDialogId(null)
       }
 
@@ -402,7 +396,16 @@ export function ConnectionsPage() {
 
     window.addEventListener('keydown', onKeyDown)
     return () => window.removeEventListener('keydown', onKeyDown)
-  }, [deleteDialogId, filteredConnections, isStarterLimitReached, newDialogOpen, router, selectedId, upgradeDialogOpen])
+  }, [deleteDialogId, filteredConnections, newDialogOpen, router, selectedId])
+
+  // Close any open inline rename when the ACTIVE connection changes, so a
+  // pending edit never gets applied to a different connection. Keyed on the
+  // derived active id (selectedId ?? hoveredId) — hovering a card while a
+  // connection is already selected must not discard an in-progress rename.
+  const activeConnectionId = selectedId ?? hoveredId
+  useEffect(() => {
+    setRenameValue(null)
+  }, [activeConnectionId])
 
   useEffect(() => {
     if (!toasts.length) return
@@ -412,6 +415,47 @@ export function ConnectionsPage() {
 
     return () => window.clearTimeout(timeout)
   }, [toasts])
+
+  // Load a small recent-query preview for the detail panel's History tab from
+  // the real audit feed, scoped to the active connection. Fetches only when the
+  // History tab is open for a connection we haven't already loaded. The
+  // last-loaded id is tracked in a ref (NOT a dep) so the synchronous loading
+  // setState below does not re-trigger this effect and self-cancel its own fetch.
+  useEffect(() => {
+    const activeId = selectedId ?? hoveredId
+    if (overviewTab !== 'history' || !activeId) return
+    if (loadedHistoryRef.current === activeId) return
+
+    loadedHistoryRef.current = activeId
+    let cancelled = false
+    setDetailHistory({ connectionId: activeId, loading: true, items: [] })
+
+    void (async () => {
+      try {
+        const response = await fetch(`/api/history?connectionId=${encodeURIComponent(activeId)}&limit=5`, { cache: 'no-store' })
+        const payload = (await response.json()) as {
+          items?: Array<{ id: string; nlQuery: string; status: string; createdAt: string }>
+        }
+        if (cancelled) return
+        const items = (payload.items ?? []).map(item => ({
+          id: item.id,
+          query: item.nlQuery,
+          status: item.status,
+          timestamp: new Date(item.createdAt).toLocaleString(undefined, { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' }),
+        }))
+        setDetailHistory({ connectionId: activeId, loading: false, items })
+      } catch {
+        if (cancelled) return
+        // Allow a retry on next open after a failure.
+        loadedHistoryRef.current = null
+        setDetailHistory({ connectionId: activeId, loading: false, items: [] })
+      }
+    })()
+
+    return () => {
+      cancelled = true
+    }
+  }, [selectedId, hoveredId, overviewTab])
 
   const unreachableConnections = connections.filter(connection => connection.status === 'unreachable')
   const activeConnection = connections.find(connection => connection.id === (selectedId ?? hoveredId)) ?? null
@@ -597,15 +641,96 @@ export function ConnectionsPage() {
 
   async function runOverviewTest(connection: ConnectionRecord) {
     setOverviewTesting(true)
-    await new Promise(resolve => window.setTimeout(resolve, 900))
 
-    if (connection.status === 'unreachable') {
-      enqueueToast({ tone: 'error', title: 'Connection test failed', description: connection.simulatedError ?? 'dial tcp connection refused' })
-    } else {
-      enqueueToast({ tone: 'success', title: 'Connection healthy', description: `${connection.name} responded successfully in 482ms.` })
+    try {
+      const response = await fetch(`/api/connections/${encodeURIComponent(connection.id)}/test`, {
+        method: 'POST',
+      })
+      const payload = (await response.json()) as TestConnectionResponse & ErrorResponse
+
+      if (!response.ok) {
+        throw new Error(payload.error?.message || 'Connection test failed')
+      }
+
+      enqueueToast({
+        tone: 'success',
+        title: 'Connection healthy',
+        description: `${connection.name} responded successfully in ${payload.latencyMs}ms.`,
+      })
+    } catch (error) {
+      const message = error instanceof Error ? error.message : 'Connection test failed'
+      enqueueToast({ tone: 'error', title: 'Connection test failed', description: message })
+    } finally {
+      setOverviewTesting(false)
+    }
+  }
+
+  async function runSchemaResync(connection: ConnectionRecord) {
+    if (resyncingConnectionId) return
+    setResyncingConnectionId(connection.id)
+
+    try {
+      const response = await fetch(`/api/connections/${encodeURIComponent(connection.id)}/sync`, {
+        method: 'POST',
+      })
+      const payload = (await response.json()) as ErrorResponse
+
+      if (!response.ok) {
+        throw new Error(payload.error?.message || 'Could not start schema sync')
+      }
+
+      syncStatusRef.current[connection.id] = 'syncing'
+      enqueueToast({
+        tone: 'info',
+        title: 'Schema sync started',
+        description: `${connection.name} is re-syncing its schema.`,
+      })
+      void refreshConnections({ silent: true })
+    } catch (error) {
+      const message = error instanceof Error ? error.message : 'Could not start schema sync'
+      enqueueToast({ tone: 'error', title: 'Re-sync failed', description: message })
+    } finally {
+      setResyncingConnectionId(null)
+    }
+  }
+
+  async function handleRenameConnection(connection: ConnectionRecord) {
+    if (renameValue === null) return
+    const trimmed = renameValue.trim()
+
+    if (trimmed.length < 2 || trimmed.length > 50) {
+      enqueueToast({ tone: 'error', title: 'Invalid name', description: 'Connection name must be between 2 and 50 characters.' })
+      return
     }
 
-    setOverviewTesting(false)
+    if (trimmed === connection.name) {
+      setRenameValue(null)
+      return
+    }
+
+    setIsRenaming(true)
+
+    try {
+      const response = await fetch(`/api/connections/${encodeURIComponent(connection.id)}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ label: trimmed }),
+      })
+      const payload = (await response.json()) as ErrorResponse
+
+      if (!response.ok) {
+        throw new Error(payload.error?.message || 'Could not rename connection')
+      }
+
+      setConnections(current => current.map(item => (item.id === connection.id ? { ...item, name: trimmed } : item)))
+      setRenameValue(null)
+      enqueueToast({ tone: 'success', title: 'Connection renamed', description: `Now called "${trimmed}".` })
+    } catch (error) {
+      const message = error instanceof Error ? error.message : 'Could not rename connection'
+      enqueueToast({ tone: 'error', title: 'Rename failed', description: message })
+    } finally {
+      setIsRenaming(false)
+    }
   }
 
   async function handleDeleteConnection() {
@@ -654,14 +779,8 @@ export function ConnectionsPage() {
             {isRefreshingConnections ? <span className="text-xs text-[#7B7E8F]">Refreshing statuses...</span> : null}
               <button
                 type="button"
-              disabled={isStarterLimitReached}
-              onClick={() => (isStarterLimitReached ? setUpgradeDialogOpen(true) : openNewConnectionDialog())}
-              title={isStarterLimitReached ? 'Upgrade to Pro for unlimited connections.' : undefined}
-              className={`inline-flex items-center justify-center gap-2 rounded-full px-4 py-2.5 text-sm font-semibold transition-colors ${
-                isStarterLimitReached
-                  ? 'cursor-not-allowed bg-[#A79EFA] text-[#FCFAF5]'
-                  : 'cursor-pointer bg-[#5849F2] text-[#FCFAF5] hover:bg-[#4338CA]'
-              }`}
+              onClick={() => openNewConnectionDialog()}
+              className="inline-flex cursor-pointer items-center justify-center gap-2 rounded-full bg-[#5849F2] px-4 py-2.5 text-sm font-semibold text-[#FCFAF5] transition-colors hover:bg-[#4338CA]"
             >
               <PlusIcon />
               New Connection
@@ -887,7 +1006,61 @@ export function ConnectionsPage() {
                     <ConnectionDbIcon dbType={activeConnection.dbType} />
                   </div>
                   <div className="min-w-0 flex-1">
-                    <h2 className="font-display text-[20px] leading-none tracking-[-0.04em] text-[#313852]">{activeConnection.name}</h2>
+                    {renameValue !== null ? (
+                      <div className="flex items-center gap-2">
+                        <input
+                          aria-label="Connection name"
+                          value={renameValue}
+                          autoFocus
+                          maxLength={50}
+                          disabled={isRenaming}
+                          onChange={event => setRenameValue(event.target.value)}
+                          onKeyDown={event => {
+                            if (event.key === 'Enter') {
+                              event.preventDefault()
+                              void handleRenameConnection(activeConnection)
+                            }
+                            if (event.key === 'Escape') {
+                              event.preventDefault()
+                              setRenameValue(null)
+                            }
+                          }}
+                          className="h-9 w-full rounded-xl border border-[#C2CBD4] bg-white px-3 text-[15px] text-[#313852] outline-none focus:border-[#5849F2] disabled:opacity-60"
+                        />
+                        <button
+                          type="button"
+                          onClick={() => void handleRenameConnection(activeConnection)}
+                          disabled={isRenaming}
+                          className="inline-flex h-9 shrink-0 items-center rounded-full bg-[#5849F2] px-3 text-[12px] font-semibold text-[#FCFAF5] transition-colors hover:bg-[#4338CA] disabled:opacity-60"
+                        >
+                          {isRenaming ? 'Saving…' : 'Save'}
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => setRenameValue(null)}
+                          disabled={isRenaming}
+                          className="inline-flex h-9 shrink-0 items-center rounded-full border border-[#C2CBD4] px-3 text-[12px] font-medium text-[#313852] transition-colors hover:bg-[#F7F4EB] disabled:opacity-60"
+                        >
+                          Cancel
+                        </button>
+                      </div>
+                    ) : (
+                      <div className="flex items-center gap-2">
+                        <h2 className="font-display text-[20px] leading-none tracking-[-0.04em] text-[#313852]">{activeConnection.name}</h2>
+                        <button
+                          type="button"
+                          aria-label="Rename connection"
+                          title="Rename connection"
+                          onClick={() => setRenameValue(activeConnection.name)}
+                          className="inline-flex h-7 w-7 items-center justify-center rounded-full text-[#7B7E8F] transition-colors hover:bg-[#F7F4EB] hover:text-[#313852] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#5849F2] focus-visible:ring-offset-2"
+                        >
+                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" className="h-3.5 w-3.5" aria-hidden="true">
+                            <path d="M4 20h4l10-10-4-4L4 16v4z" strokeLinecap="round" strokeLinejoin="round" />
+                            <path d="M13.5 6.5l4 4" strokeLinecap="round" />
+                          </svg>
+                        </button>
+                      </div>
+                    )}
                     <div className={`mt-3 inline-flex items-center gap-2 rounded-full border px-3 py-1 text-[11px] font-medium ${getConnectionStatusMeta(activeConnection.status).badge}`}>
                       <span className="h-2 w-2 rounded-full" style={{ backgroundColor: getConnectionStatusMeta(activeConnection.status).dot }} />
                       {getConnectionStatusMeta(activeConnection.status).label}
@@ -951,8 +1124,15 @@ export function ConnectionsPage() {
                   <div className="mt-4">
                     <div className="mb-3 flex items-center justify-between">
                       <p className="text-sm font-medium text-[#313852]">Schema snapshot</p>
-                      <button type="button" aria-label="Refresh schema snapshot" className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-[#C2CBD4] text-[#7B7E8F] transition-colors hover:bg-[#F7F4EB] hover:text-[#313852]">
-                        <RefreshIcon />
+                      <button
+                        type="button"
+                        aria-label="Re-sync schema"
+                        title="Re-sync schema"
+                        onClick={() => void runSchemaResync(activeConnection)}
+                        disabled={resyncingConnectionId === activeConnection.id || activeConnection.status === 'syncing'}
+                        className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-[#C2CBD4] text-[#7B7E8F] transition-colors hover:bg-[#F7F4EB] hover:text-[#313852] disabled:cursor-not-allowed disabled:opacity-60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#5849F2] focus-visible:ring-offset-2"
+                      >
+                        {resyncingConnectionId === activeConnection.id ? <SpinnerIcon /> : <RefreshIcon />}
                       </button>
                     </div>
 
@@ -996,22 +1176,28 @@ export function ConnectionsPage() {
 
                 {overviewTab === 'history' ? (
                   <div className="mt-4 space-y-3">
-                    {activeConnection.history.map(item => (
-                      <button
-                        key={item.id}
-                        type="button"
-                        onClick={() => router.push(`/chat/${activeConnection.id}?query=${encodeURIComponent(item.query)}`)}
-                        className="flex w-full items-start justify-between gap-3 rounded-2xl border border-[#E5E0D4] bg-[#FCFAF5] px-3 py-3 text-left transition-colors hover:border-[#5849F2]"
-                      >
-                        <div className="min-w-0">
-                          <p className="truncate text-[13px] text-[#313852]">{item.query}</p>
-                          <p className="mt-2 text-[11px] text-[#7B7E8F]">{item.timestamp}</p>
-                        </div>
-                        <span className={`rounded-full px-2.5 py-1 text-[11px] font-medium ${item.status === 'success' ? 'bg-[#E8F8EC] text-[#1C6B3C]' : 'bg-[#FEF3F2] text-[#B42318]'}`}>
-                          {item.status === 'success' ? 'Success' : 'Failed'}
-                        </span>
-                      </button>
-                    ))}
+                    {detailHistory.loading && detailHistory.connectionId === activeConnection.id ? (
+                      <p className="text-[13px] text-[#7B7E8F]">Loading recent queries…</p>
+                    ) : detailHistory.items.length === 0 ? (
+                      <p className="text-[13px] text-[#7B7E8F]">No queries have been run against this connection yet.</p>
+                    ) : (
+                      detailHistory.items.map(item => (
+                        <button
+                          key={item.id}
+                          type="button"
+                          onClick={() => router.push(`/history?connection=${activeConnection.id}`)}
+                          className="flex w-full items-start justify-between gap-3 rounded-2xl border border-[#E5E0D4] bg-[#FCFAF5] px-3 py-3 text-left transition-colors hover:border-[#5849F2]"
+                        >
+                          <div className="min-w-0">
+                            <p className="truncate text-[13px] text-[#313852]">{item.query}</p>
+                            <p className="mt-2 text-[11px] text-[#7B7E8F]">{item.timestamp}</p>
+                          </div>
+                          <span className={`shrink-0 rounded-full px-2.5 py-1 text-[11px] font-medium ${item.status === 'SUCCESS' ? 'bg-[#E8F8EC] text-[#1C6B3C]' : item.status === 'BLOCKED' ? 'bg-[#FFF7EB] text-[#B35B00]' : 'bg-[#FEF3F2] text-[#B42318]'}`}>
+                            {item.status.charAt(0) + item.status.slice(1).toLowerCase()}
+                          </span>
+                        </button>
+                      ))
+                    )}
 
                     <button type="button" onClick={() => router.push(`/history?connection=${activeConnection.id}`)} className="inline-flex min-h-11 items-center text-sm font-medium text-[#5849F2] transition-colors hover:text-[#4338CA]">
                       See full history
@@ -1178,19 +1364,6 @@ export function ConnectionsPage() {
                   </button>
                 </div>
               </div>
-            </div>
-          </div>
-        </div>
-      ) : null}
-
-      {upgradeDialogOpen ? (
-        <div className="fixed inset-0 z-[70] flex items-center justify-center bg-[#313852]/35 p-4" role="presentation">
-          <div ref={upgradeDialogRef} tabIndex={-1} role="dialog" aria-modal="true" aria-labelledby="upgrade-dialog-title" className="w-full max-w-md rounded-[28px] border border-[#C2CBD4] bg-white p-6 shadow-[0_24px_80px_rgba(49,56,82,0.18)] outline-none">
-            <h2 id="upgrade-dialog-title" className="font-display text-[22px] leading-none tracking-[-0.04em] text-[#313852]">Upgrade to Pro</h2>
-            <p className="mt-3 text-sm leading-7 text-[#7B7E8F]">Starter currently supports up to {starterConnectionLimit} saved connections. Upgrade to Pro for unlimited connection slots, expanded query history, and faster schema refreshes.</p>
-            <div className="mt-5 flex justify-end gap-3">
-              <button type="button" onClick={() => setUpgradeDialogOpen(false)} className="rounded-full border border-[#C2CBD4] px-4 py-2.5 text-sm font-medium text-[#313852]">Maybe later</button>
-              <button type="button" className="rounded-full bg-[#5849F2] px-4 py-2.5 text-sm font-semibold text-[#FCFAF5]">View upgrade options</button>
             </div>
           </div>
         </div>

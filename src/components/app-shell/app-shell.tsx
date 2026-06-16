@@ -4,10 +4,9 @@ import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
 import { useMemo, useState } from 'react'
 import { authClient } from '@/lib/auth-client'
-import { appNavItems, appNotifications, appPageTitles } from '@/components/app-shell/constants'
+import { appNavItems, appPageTitles } from '@/components/app-shell/constants'
 import {
   AppLogoMark,
-  BellIcon,
   SignOutIcon,
   SettingsIcon,
   getShellNavIcon,
@@ -53,22 +52,35 @@ function MobileNavItem({ item, active }: { item: (typeof appNavItems)[number]; a
   )
 }
 
+function isChatRoute(pathname: string) {
+  // The chat experience lives at /chat, /chat/[id], and /connections/[id]/chat.
+  return pathname === '/chat' || pathname.startsWith('/chat/') || pathname.endsWith('/chat')
+}
+
 function isNavItemActive(pathname: string, href: string) {
+  // Any chat route highlights the Chat item only — not Connections, even though
+  // the real chat page lives under /connections/[id]/chat.
+  if (isChatRoute(pathname)) {
+    return href === '/chat'
+  }
   return pathname === href || pathname.startsWith(`${href}/`)
 }
 
 function getPageTitle(pathname: string) {
-  if (pathname.endsWith('/chat') || pathname.startsWith('/chat/')) {
+  if (appPageTitles[pathname]) {
+    return appPageTitles[pathname]
+  }
+
+  if (isChatRoute(pathname)) {
     return 'Connection Chat'
   }
 
-  return appPageTitles[pathname] ?? 'Connections'
+  return 'Connections'
 }
 
 export function AppShell({ children, user }: AppShellProps) {
   const pathname = usePathname()
   const router = useRouter()
-  const [alertsOpen, setAlertsOpen] = useState(false)
   const [profileOpen, setProfileOpen] = useState(false)
 
   const pageTitle = getPageTitle(pathname)
@@ -145,40 +157,8 @@ export function AppShell({ children, user }: AppShellProps) {
             </div>
 
             <div className="flex items-center gap-3">
-              <div className="hidden rounded-full border border-[#E5E0D4] bg-[#F7F4EB] px-3 py-1 text-xs font-medium text-[#5F6475] sm:block">
-                Starter Plan
-              </div>
               <div className="hidden rounded-full border border-[#E5E0D4] bg-white px-3 py-1 text-xs font-medium text-[#7B7E8F] md:block">
                 {keyboardHint}
-              </div>
-
-              <div className="relative">
-                <button
-                  type="button"
-                  onClick={() => setAlertsOpen(open => !open)}
-                  aria-label="Open system alerts"
-                  aria-expanded={alertsOpen}
-                  className="min-h-11 min-w-11 rounded-full border border-[#C2CBD4] bg-[#F7F4EB] p-2 text-[#313852] transition-colors hover:bg-white focus:outline-none focus:ring-2 focus:ring-[#5849F2] focus:ring-offset-2 focus:ring-offset-white"
-                >
-                  <BellIcon />
-                </button>
-
-                {alertsOpen ? (
-                  <div className="absolute right-0 top-[calc(100%+8px)] w-80 rounded-2xl border border-[#C2CBD4] bg-white p-3 shadow-[0_20px_60px_rgba(49,56,82,0.08)]">
-                    <p className="px-1 text-sm font-medium text-[#313852]">System alerts</p>
-                    <div className="mt-3 space-y-2">
-                      {appNotifications.map(notification => (
-                        <div key={notification.id} className="rounded-xl border border-[#E5E0D4] bg-[#FCFAF5] p-3">
-                          <div className="flex items-start justify-between gap-3">
-                            <p className="text-sm font-medium text-[#313852]">{notification.title}</p>
-                            <span className="text-[11px] uppercase tracking-[0.18em] text-[#7B7E8F]">{notification.time}</span>
-                          </div>
-                          <p className="mt-2 text-xs leading-6 text-[#7B7E8F]">{notification.description}</p>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                ) : null}
               </div>
 
               <div className="relative">

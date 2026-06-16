@@ -21,15 +21,15 @@ CHART TYPES YOU CAN USE:
 - metric_card : single important number with a label
 - none      : cannot be visualized meaningfully as a chart
 
-RULES:
-1. If the result is empty → always return none
-2. If the result is a single number → always return metric_card
-3. If the user explicitly asked for a specific chart type → respect that
-4. If the data has more than 5 columns → prefer table
-5. If the data has more than 50 rows and no aggregation → prefer table
-6. Never force a chart if the data doesn't support it — return none instead
-7. For metric_card include the value and a clean human readable label
-8. For all other chart types include xKey and yKey (field names from the result)
+RULES (in priority order):
+1. If the user explicitly asked for a specific chart type (line, bar, pie, area, scatter, table), return THAT type whenever the result can support it. An explicit request outranks every rule below. A multi-row time series (a date/time column plus a numeric column) always supports the requested line or area chart.
+2. If the result is empty → return none.
+3. If the result is a single number AND the user did NOT request a specific chart type → return metric_card.
+4. If the data has more than 5 columns → prefer table (unless a specific chart type was requested and supported).
+5. If the data has more than 50 rows and no aggregation → prefer table (unless a specific chart type was requested and supported).
+6. Only return none when the data genuinely cannot support ANY chart (e.g. a single scalar with no requested chart type). Do not return none just to avoid a requested chart that the data can actually support.
+7. For metric_card include the value and a clean human readable label.
+8. For all other chart types include xKey and yKey (field names from the result).
 
 RESPONSE FORMAT:
 Return ONLY a valid JSON object. No explanation. No markdown. No code fences.

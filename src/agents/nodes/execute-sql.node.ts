@@ -4,6 +4,7 @@ import { prisma } from '@/lib/prisma'
 import { ConnectionCredentials } from '@/db/drivers/base.driver'
 import { AgentStateType, QueryResult, SqlAttempt } from '../state'
 import { DBType } from '@/generated/prisma/enums'
+import { maskRows } from '@/lib/server/pii-masking'
 
 const MAX_ROWS = 10_000
 
@@ -42,6 +43,7 @@ export async function executeSQLNode(
     select: {
       dbType: true,
       encryptedCredentials: true,
+      piiColumns: true,
     },
   })
 
@@ -68,36 +70,55 @@ export async function executeSQLNode(
     }
   }
 
-  const driver = createDriver(connection.dbType as DBType, credentials)
+  const driver = createDriver(connection.dbType as DBType, credentials, {
+    shared: true,
+    poolKey: state.connectionId,
+  })
 
   try {
     // ── Step 3: Execute validated SQL ───────────────────────────────────────
     const raw = await driver.executeQuery(state.currentSql)
 
-    // ── Step 4: Apply row cap for safety ────────────────────────────────────
-    const isTruncated = raw.rowCount > MAX_ROWS
-    const rows = raw.rows.slice(0, MAX_ROWS)
+    // ── Step 4: Truncation signal comes from the driver ─────────────────────
+    // The driver fetched one row past the cap to detect overflow and already
+    // capped raw.rows to MAX_ROWS, so we trust raw.wasTruncated here rather
+    // than re-deriving it (the old `rowCount > MAX_ROWS` check was always false
+    // because rowCount was already capped).
+    const isTruncated = raw.wasTruncated
+
+    // ── Step 5: Mask PII before results reach the LLM or the user ────────────
+    // The same two-layer redaction used by the data-explorer preview path.
+    // Masking here guarantees no raw PII is sent to the visualization/response
+    // nodes (and thus the LLM provider) or streamed back to the client.
+    const masked = maskRows(raw.rows, raw.fields, connection.piiColumns)
 
     const queryResult: QueryResult = {
-      rows,
+      rows: masked.rows,
       rowCount: raw.rowCount,
-      returnedRowCount: rows.length,
+      returnedRowCount: masked.rows.length,
       fields: raw.fields,
       isTruncated,
     }
 
     if (isTruncated) {
       console.warn(
-        `[executeSQL] Result truncated: totalRows=${raw.rowCount}, returnedRows=${rows.length}, limit=${MAX_ROWS}`
+        `[executeSQL] Result truncated at ${MAX_ROWS} rows (more rows matched than the cap)`
+      )
+    }
+
+    if (masked.maskedColumns.length > 0) {
+      console.log(
+        `[executeSQL] 🔒 Masked ${masked.maskedColumns.length} column(s): ${masked.maskedColumns.join(', ')}`
       )
     }
 
     console.log(
-      `[executeSQL] ✅ Success — totalRows=${queryResult.rowCount}, returnedRows=${queryResult.returnedRowCount}`
+      `[executeSQL] ✅ Success — returnedRows=${queryResult.returnedRowCount}, truncated=${isTruncated}`
     )
 
     return {
       queryResult,
+      maskedColumns: masked.maskedColumns,
       lastError: '',
     }
   } catch (error) {

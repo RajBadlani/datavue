@@ -6,6 +6,13 @@ export interface ConversationMessage {
     sql?: string;
     rowCount?: number;
     timestamp: string;
+    // Optional rich turn metadata, persisted so a reloaded conversation keeps
+    // its reasoning, SQL attempt number, chart, and result table instead of
+    // collapsing to plain text. Only set on assistant data-query turns.
+    reasoning?: string[];
+    sqlAttempt?: number;
+    chartConfig?: ChartConfig | null;
+    queryResult?: QueryResult | null;
 }
 
 export interface SchemaColumn {
@@ -116,6 +123,10 @@ export const AgentState = Annotation.Root({
     queryResult: Annotation<QueryResult | null>({
         reducer: (_, newVal) => newVal,
         default: () => null,
+    }),
+    maskedColumns: Annotation<string[]>({
+        reducer: (_, newVal) => newVal,
+        default: () => [],
     }),
     lastError: Annotation<string>({
         reducer: (_, newVal) => newVal,

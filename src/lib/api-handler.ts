@@ -2,7 +2,10 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { ApiError } from './api-error'
 
-type Handler = (req: NextRequest, context?: any) => Promise<NextResponse>
+// Handlers may return a NextResponse (the common case) or a plain streaming
+// Response (e.g. the SSE chat route). NextResponse extends Response, so this
+// widening is backward-compatible with every existing handler.
+type Handler = (req: NextRequest, context?: any) => Promise<Response>
 
 export function withErrorHandler(handler: Handler): Handler {
   return async (req, context) => {

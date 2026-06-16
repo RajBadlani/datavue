@@ -1,10 +1,7 @@
+import { redirect } from 'next/navigation'
+
+// Audit Logs and Query History were merged into a single page. Preserve any old
+// links/bookmarks by redirecting to the combined history view.
 export default function AuditLogsPage() {
-  return (
-    <div className="px-6 py-6 sm:px-8 lg:px-10">
-      <div className="rounded-[24px] border border-[#C2CBD4] bg-white p-8">
-        <h1 className="font-display text-[32px] leading-none tracking-[-0.05em] text-[#313852]">Audit Logs</h1>
-        <p className="mt-4 text-[15px] leading-7 text-[#7B7E8F]">Audit trace views will live here inside the shared app shell.</p>
-      </div>
-    </div>
-  )
+  redirect('/history')
 }

@@ -1,15 +1,16 @@
-import { PostgresDriver } from './postgres.driver'
+import { PostgresDriver, type PostgresDriverOptions } from './postgres.driver'
 import { DatabaseDriver, ConnectionCredentials } from './base.driver'
 import { DBType } from '@/generated/prisma/enums'
 
 
 export function createDriver(
   dbType: DBType,
-  credentials: ConnectionCredentials
+  credentials: ConnectionCredentials,
+  options?: PostgresDriverOptions
 ): DatabaseDriver {
   switch (dbType) {
     case DBType.POSTGRES:
-      return new PostgresDriver(credentials)
+      return new PostgresDriver(credentials, options)
 
     case DBType.MYSQL:
     case DBType.MONGODB:
@@ -21,4 +22,5 @@ export function createDriver(
   }
 }
 
-export type { DatabaseDriver, ConnectionCredentials}
+export type { DatabaseDriver, ConnectionCredentials }
+export type { PostgresDriverOptions }

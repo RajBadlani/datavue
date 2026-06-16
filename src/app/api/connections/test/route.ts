@@ -13,6 +13,8 @@ interface TestConnectionBody{
     password : string
     database : string
     ssl : boolean
+    sslRejectUnauthorized? : boolean
+    caCert? : string
 }
 
 export const POST = withErrorHandler ( async ( req : NextRequest)=>{
@@ -20,7 +22,7 @@ export const POST = withErrorHandler ( async ( req : NextRequest)=>{
     await requireAuthSession()
 
     const body = await req.json() as TestConnectionBody
-    const { dbType , host , port , user , password , database , ssl } = body
+    const { dbType , host , port , user , password , database , ssl , sslRejectUnauthorized , caCert } = body
 
     if( !dbType || !host || !port || !user || !password || !database ){
         throw new ApiError("INVALID_INPUT" , 'Missing required fields: dbType, host, port, user, password, database', 400)
@@ -31,7 +33,9 @@ export const POST = withErrorHandler ( async ( req : NextRequest)=>{
     }
 
     const credentials : ConnectionCredentials = {
-        host , port : Number(port) , user , password , database , ssl : Boolean(ssl)
+        host , port : Number(port) , user , password , database , ssl : Boolean(ssl),
+        ...(typeof sslRejectUnauthorized === 'boolean' ? { sslRejectUnauthorized } : {}),
+        ...(caCert ? { caCert } : {}),
     }
 
     const driver = createDriver(dbType , credentials)

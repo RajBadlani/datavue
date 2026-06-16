@@ -29,6 +29,11 @@ export interface QueryResult {
   rows: Record<string, unknown>[]
   rowCount: number
   fields: string[]
+  /**
+   * True when the underlying query matched more rows than the driver's row cap,
+   * so `rows`/`rowCount` are a capped subset rather than the full result.
+   */
+  wasTruncated: boolean
 }
 
 export interface TablePreviewOptions {
@@ -45,6 +50,14 @@ export interface ConnectionCredentials {
   password: string
   database: string
   ssl: boolean
+  /**
+   * When SSL is enabled, controls whether the server's certificate chain is
+   * verified. Defaults to true (verify) when omitted. Set to false only for
+   * trusted networks with self-signed certs where a CA cannot be supplied.
+   */
+  sslRejectUnauthorized?: boolean
+  /** Optional PEM-encoded CA certificate used to verify a self-signed server cert. */
+  caCert?: string
 }
 
 export interface DatabaseDriver {

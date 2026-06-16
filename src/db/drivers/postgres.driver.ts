@@ -13,8 +13,52 @@ const QUERY_TIMEOUT_MS = 30_000;
 const MAX_ROWS = 10_000;
 const POOL_MAX = 5;
 
+export type PostgresDriverOptions = {
+    /** Reuse a process-cached pool keyed by `poolKey` instead of a throwaway pool. */
+    shared?: boolean;
+    /** Stable key for the shared pool (use the connection id). Required when shared. */
+    poolKey?: string;
+};
+
+// Process-wide cache of shared pools, keyed by connection id. Guarded on
+// globalThis so dev hot-reload does not spawn duplicate caches (same pattern as
+// the prisma/redis singletons).
+const globalForPgPools = globalThis as unknown as {
+    __datavuePgPools?: Map<string, Pool>;
+};
+
+const sharedPools: Map<string, Pool> =
+    globalForPgPools.__datavuePgPools ?? new Map<string, Pool>();
+
+if (process.env.NODE_ENV !== "production") {
+    globalForPgPools.__datavuePgPools = sharedPools;
+}
+
+/**
+ * Evict and close the cached shared pool for a connection. Call this when a
+ * connection is deleted (or its credentials change) so the Pool object and its
+ * open sockets are released instead of leaking on globalThis. No-op if there is
+ * no cached pool for the key. Errors during teardown are swallowed so callers
+ * (e.g. a DELETE handler) never fail on cleanup.
+ */
+export async function evictSharedPool(poolKey: string): Promise<void> {
+    const pool = sharedPools.get(poolKey);
+    if (!pool) {
+        return;
+    }
+
+    sharedPools.delete(poolKey);
+
+    try {
+        await pool.end();
+    } catch (error) {
+        console.error(`[postgres-driver] Failed to end pool for ${poolKey}:`, error);
+    }
+}
+
 export class PostgresDriver implements DatabaseDriver {
     private pool: Pool;
+    private isShared: boolean;
 
     private quoteIdentifier(value: string): string {
         return `"${value.replace(/"/g, '""')}"`;
@@ -32,18 +76,72 @@ export class PostgresDriver implements DatabaseDriver {
         return enumValues.length > 0 ? enumValues : null;
     }
 
-    constructor(private credentials: ConnectionCredentials) {
-        this.pool = new Pool({
+    constructor(
+        private credentials: ConnectionCredentials,
+        options: PostgresDriverOptions = {},
+    ) {
+        this.isShared = Boolean(options.shared && options.poolKey);
+
+        if (this.isShared) {
+            const key = options.poolKey as string;
+            const existing = sharedPools.get(key);
+
+            if (existing) {
+                this.pool = existing;
+            } else {
+                this.pool = PostgresDriver.createPool(credentials);
+                sharedPools.set(key, this.pool);
+            }
+        } else {
+            this.pool = PostgresDriver.createPool(credentials);
+        }
+    }
+
+    private static createPool(credentials: ConnectionCredentials): Pool {
+        const pool = new Pool({
             host: credentials.host,
             port: credentials.port,
             user: credentials.user,
             password: credentials.password,
             database: credentials.database,
-            ssl: credentials.ssl ? { rejectUnauthorized: false } : false,
+            ssl: PostgresDriver.buildSslConfig(credentials),
             max: POOL_MAX,
             connectionTimeoutMillis: 10_000,
             idleTimeoutMillis: 30_000,
         });
+
+        // A long-lived (shared) pool WILL eventually see an idle client error
+        // (DB restart, network blip). Without this listener, node-postgres
+        // re-emits it as an uncaught 'error' on the pool and crashes the
+        // process. Swallow-and-log so a transient backend hiccup cannot take
+        // the web server down; the pool reconnects on the next checkout.
+        pool.on("error", (err) => {
+            console.error("[postgres-driver] Idle client error:", err.message);
+        });
+
+        return pool;
+    }
+
+    // ─── SSL Config ──────────────────────────────────────────────────────────
+    // Verify the server certificate by default. A man-in-the-middle who can
+    // present any certificate would otherwise capture the user's database
+    // credentials and query data, defeating the point of enabling SSL. Users on
+    // trusted networks with self-signed certs can supply a CA, or explicitly opt
+    // out of verification via sslRejectUnauthorized: false.
+    private static buildSslConfig(
+        credentials: ConnectionCredentials,
+    ): false | { rejectUnauthorized: boolean; ca?: string } {
+        if (!credentials.ssl) {
+            return false;
+        }
+
+        const rejectUnauthorized = credentials.sslRejectUnauthorized ?? true;
+
+        if (credentials.caCert) {
+            return { rejectUnauthorized, ca: credentials.caCert };
+        }
+
+        return { rejectUnauthorized };
     }
 
     // ─── Test Connection ─────────────────────────────────────────────────────
@@ -292,25 +390,52 @@ export class PostgresDriver implements DatabaseDriver {
         try {
             client = await this.pool.connect();
 
-            // Enforce query timeout at the DB level
-            await client.query(`SET statement_timeout = ${QUERY_TIMEOUT_MS}`);
+            // Run inside a READ ONLY transaction so that even if the SQL
+            // validator is bypassed, the database itself refuses any write
+            // (INSERT/UPDATE/DELETE/DDL or a data-modifying function call).
+            // This is the authoritative safety layer; the regex validator is
+            // only the first line of defense.
+            await client.query("BEGIN");
 
-            // Wrap in a row-limited subquery to enforce MAX_ROWS
-            const limitedSql = `
-        SELECT * FROM (${sql}) AS __datavue_result
-        LIMIT ${MAX_ROWS + 1}
-      `;
+            try {
+                await client.query("SET TRANSACTION READ ONLY");
 
-            const result = await client.query(limitedSql);
+                // Enforce the query timeout at the DB level. SET LOCAL keeps it
+                // scoped to this transaction so it does not leak onto the pooled
+                // connection after release.
+                await client.query(
+                    `SET LOCAL statement_timeout = ${QUERY_TIMEOUT_MS}`,
+                );
 
-            const rows = result.rows.slice(0, MAX_ROWS);
-            const fields = result.fields.map((f) => f.name);
+                // Wrap in a row-limited subquery to enforce MAX_ROWS
+                const limitedSql = `
+            SELECT * FROM (${sql}) AS __datavue_result
+            LIMIT ${MAX_ROWS + 1}
+          `;
 
-            return {
-                rows,
-                rowCount: rows.length,
-                fields,
-            };
+                const result = await client.query(limitedSql);
+
+                await client.query("COMMIT");
+
+                // Detect overflow BEFORE slicing: we fetched MAX_ROWS+1 as a
+                // sentinel, so more than MAX_ROWS rows means the real result is
+                // larger than the cap.
+                const wasTruncated = result.rows.length > MAX_ROWS;
+                const rows = result.rows.slice(0, MAX_ROWS);
+                const fields = result.fields.map((f) => f.name);
+
+                return {
+                    rows,
+                    rowCount: rows.length,
+                    fields,
+                    wasTruncated,
+                };
+            } catch (error) {
+                // Roll back so the pooled connection is not returned in an
+                // aborted-transaction state.
+                await client.query("ROLLBACK").catch(() => {});
+                throw error;
+            }
         } finally {
             client?.release();
         }
@@ -322,23 +447,38 @@ export class PostgresDriver implements DatabaseDriver {
         try {
             client = await this.pool.connect();
 
-            await client.query(`SET statement_timeout = ${QUERY_TIMEOUT_MS}`);
-
             const safeLimit = Math.max(1, Math.floor(options.limit));
             const qualifiedTableName = `${this.quoteIdentifier(options.schemaName)}.${this.quoteIdentifier(options.tableName)}`;
             const orderByClause = options.orderBy?.length
                 ? ` ORDER BY ${options.orderBy.map((column) => this.quoteIdentifier(column)).join(", ")}`
                 : "";
 
-            const result = await client.query(
-                `SELECT * FROM ${qualifiedTableName}${orderByClause} LIMIT ${safeLimit + 1}`,
-            );
+            // Read-only transaction with a transaction-scoped timeout. SET LOCAL
+            // keeps statement_timeout from leaking onto the pooled connection.
+            await client.query("BEGIN");
 
-            return {
-                rows: result.rows,
-                rowCount: result.rows.length,
-                fields: result.fields.map((field) => field.name),
-            };
+            try {
+                await client.query("SET TRANSACTION READ ONLY");
+                await client.query(
+                    `SET LOCAL statement_timeout = ${QUERY_TIMEOUT_MS}`,
+                );
+
+                const result = await client.query(
+                    `SELECT * FROM ${qualifiedTableName}${orderByClause} LIMIT ${safeLimit + 1}`,
+                );
+
+                await client.query("COMMIT");
+
+                return {
+                    rows: result.rows,
+                    rowCount: result.rows.length,
+                    fields: result.fields.map((field) => field.name),
+                    wasTruncated: result.rows.length > safeLimit,
+                };
+            } catch (error) {
+                await client.query("ROLLBACK").catch(() => {});
+                throw error;
+            }
         } finally {
             client?.release();
         }
@@ -368,6 +508,13 @@ export class PostgresDriver implements DatabaseDriver {
 
     // ─── Disconnect ──────────────────────────────────────────────────────────
     async disconnect(): Promise<void> {
+        // Shared pools are process-cached and reused across requests, so a
+        // per-request caller must NOT tear them down. Only throwaway pools
+        // (test/create/sync) actually end here.
+        if (this.isShared) {
+            return;
+        }
+
         await this.pool.end();
     }
 }

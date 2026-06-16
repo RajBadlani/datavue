@@ -303,6 +303,8 @@ export function useChatStream(connectionId: string | null) {
 
       const decoder = new TextDecoder()
       let buffer = ''
+      let doneReceived = false
+      let streamErrored = false
 
       while (true) {
         const { done, value } = await reader.read()
@@ -316,11 +318,26 @@ export function useChatStream(connectionId: string | null) {
           const parsed = parseEventChunk(chunk)
           if (!parsed) continue
 
+          if (parsed.event === 'done') doneReceived = true
+          if (parsed.event === 'error') streamErrored = true
           handleSseEvent(parsed.event, parsed.data)
         }
       }
 
-      setStatus(current => (current === 'streaming' ? 'done' : current))
+      // The server signals success with an explicit `done` event and failure
+      // with an `error` event; handleSseEvent has already set the terminal
+      // status in those cases. If the stream closed with NEITHER (proxy/LB cut
+      // the connection, server crashed mid-stream), the answer is incomplete —
+      // surface that as an error instead of silently presenting a partial
+      // result as finished. The side effect stays outside the setStatus updater
+      // (updaters must be pure).
+      if (!doneReceived && !streamErrored) {
+        updateLastAssistantTurn(turn => ({
+          ...turn,
+          error: turn.error ?? 'The response ended before it finished. Please try again.',
+        }))
+        setStatus(current => (current === 'streaming' ? 'error' : current))
+      }
       setAgentStep('')
     } catch (error) {
       if (error instanceof Error && error.name === 'AbortError') {

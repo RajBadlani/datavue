@@ -61,8 +61,11 @@ function summarizeResults(queryResult: QueryResult): string {
   const lines: string[] = []
 
   lines.push(`Fields: ${fields.join(', ')}`)
-  lines.push(`Total matching rows: ${rowCount}`)
-  lines.push(`Rows available in execution result: ${returnedRowCount}${isTruncated ? ' (execution result was truncated before response generation)' : ''}`)
+  if (isTruncated) {
+    lines.push(`Rows returned: ${returnedRowCount} (capped — the query matched more rows than the ${returnedRowCount}-row limit, so this is a partial result)`)
+  } else {
+    lines.push(`Rows returned: ${rowCount}`)
+  }
   lines.push(`Rows shown to you in this summary: ${sampledRows.length}${isSampleTrimmed ? ` (showing first ${SAMPLE_SIZE})` : ''}`)
   lines.push('')
   lines.push('Results:')
@@ -90,10 +93,13 @@ function buildFallbackResponse(state: AgentStateType): string {
   }
 
   const lines: string[] = []
-  lines.push(`Your query matched ${rowCount} row${rowCount > 1 ? 's' : ''}.`)
 
   if (isTruncated) {
-    lines.push(`Showing the first ${returnedRowCount} row${returnedRowCount > 1 ? 's' : ''} due to the result size limit.`)
+    // rowCount is the capped value, not the true total, so don't present it as
+    // an exact match count. Say "more than N" and that this is a partial view.
+    lines.push(`Your query matched more than ${returnedRowCount} rows. Showing the first ${returnedRowCount} due to the result size limit.`)
+  } else {
+    lines.push(`Your query matched ${rowCount} row${rowCount > 1 ? 's' : ''}.`)
   }
 
   lines.push(`Fields: ${fields.join(', ')}`)
