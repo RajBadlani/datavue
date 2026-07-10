@@ -1,3 +1,5 @@
+'use client'
+
 import { useEffect, useState } from 'react'
 import { useInView } from '@/components/landing/hooks/use-in-view'
 

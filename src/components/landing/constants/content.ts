@@ -23,6 +23,7 @@ export const navLinks = [
   { label: 'Self-healing', href: '#self-healing' },
   { label: 'Security', href: '#security' },
   { label: 'Pricing', href: '#pricing' },
+  { label: 'About', href: '/about' },
 ] as const
 
 export const heroQueries: HeroQuery[] = [
