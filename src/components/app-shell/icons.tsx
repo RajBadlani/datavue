@@ -11,7 +11,7 @@ function ShellIcon({ children }: { children: ReactNode }) {
 export function AppLogoMark({ className = 'h-6 w-6' }: { className?: string }) {
   return (
     // eslint-disable-next-line @next/next/no-img-element
-    <img src="/datavuex-logo.png" alt="DatavueX" className={`rounded-md ${className}`} />
+    <img src="/datavuex-logo.svg" alt="DatavueX" className={className} />
   )
 }
 
