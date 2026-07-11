@@ -9,7 +9,7 @@ type BrandWordmarkProps = {
 export function BrandWordmark({ href = '#top', textClassName = 'font-display text-[18px] text-[#313852]' }: BrandWordmarkProps) {
   return (
     <Link href={href} className="flex items-center gap-2.5">
-      <Image src="/logo-mark.svg" alt="DatavueX" width={24} height={24} className="h-6 w-6" />
+      <Image src="/datavuex-logo.png" alt="DatavueX" width={28} height={28} className="h-7 w-7 rounded-md" />
       <span className={textClassName}>DatavueX</span>
     </Link>
   )

@@ -10,11 +10,8 @@ function ShellIcon({ children }: { children: ReactNode }) {
 
 export function AppLogoMark({ className = 'h-6 w-6' }: { className?: string }) {
   return (
-    <svg viewBox="0 0 32 32" fill="none" className={className} aria-hidden="true">
-      <rect width="32" height="32" rx="8" fill="#313852" />
-      <circle cx="16" cy="16" r="10" fill="#5849F2" />
-      <text x="16" y="21" textAnchor="middle" fontFamily="system-ui, -apple-system, sans-serif" fontWeight="700" fontSize="14" fill="#FCFAF5" letterSpacing="-0.5">X</text>
-    </svg>
+    // eslint-disable-next-line @next/next/no-img-element
+    <img src="/datavuex-logo.png" alt="DatavueX" className={`rounded-md ${className}`} />
   )
 }
 
