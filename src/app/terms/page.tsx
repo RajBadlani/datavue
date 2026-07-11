@@ -156,7 +156,7 @@ export default function TermsPage() {
     <LegalPage
       label="Legal"
       title="Terms of Service"
-      effectiveDate="July 11, 2026"
+      effectiveDate="February 20, 2026"
       intro={`These terms govern your access to and use of ${COMPANY}. Please read them carefully before connecting a database or running queries.`}
       sections={sections}
     />

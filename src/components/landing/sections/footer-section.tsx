@@ -9,8 +9,6 @@ export function FooterSection() {
             <BrandWordmark href="#top" />
             <p className="mt-4 max-w-xs text-sm leading-7 text-[#7B7E8F]">AI-powered natural language database intelligence.</p>
             <div className="mt-5 flex gap-3 text-[#313852]">
-              {/* TODO: replace with your real X profile URL */}
-              <SocialBadge label="X" href="https://x.com/datavuex" />
             </div>
           </div>
 

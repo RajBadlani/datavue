@@ -138,7 +138,7 @@ export default function PrivacyPage() {
     <LegalPage
       label="Legal"
       title="Privacy Policy"
-      effectiveDate="July 11, 2026"
+      effectiveDate="February 20, 2026"
       intro={`This policy explains how ${COMPANY} collects, uses, protects, and shares information when you connect databases, ask questions, and review results.`}
       sections={sections}
     />
