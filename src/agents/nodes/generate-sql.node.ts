@@ -4,7 +4,7 @@ import { AgentStateType, SqlAttempt } from "../state";
 
 // ─── System Prompt ────────────────────────────────────────────────────────────
 // This never changes — sets the LLM's behavior for every SQL generation call
-const SQL_SYSTEM_PROMPT = `You are an expert PostgreSQL query generator for a product called Datavue.
+const SQL_SYSTEM_PROMPT = `You are an expert PostgreSQL query generator for a product called DatavueX.
 Your job is to convert a user's natural language question into accurate, executable SQL.
 
 RULES YOU MUST FOLLOW:
@@ -35,7 +35,7 @@ Return ONLY the SQL query, or a single CANNOT_ANSWER line.`;
 
 // ─── Correction System Prompt ─────────────────────────────────────────────────
 // Used when self-heal is active — tells the LLM it is fixing a broken query
-const CORRECTION_SYSTEM_PROMPT = `You are an expert PostgreSQL SQL debugger for a product called Datavue.
+const CORRECTION_SYSTEM_PROMPT = `You are an expert PostgreSQL SQL debugger for a product called DatavueX.
 You will be given:
 1. The user's original natural language question
 2. A SQL query that failed
@@ -146,16 +146,16 @@ export async function generateSQLNode(
     // ── Step 2: Build the appropriate prompt ──────────────────────────────────
     const userPrompt = isCorrection
         ? buildCorrectionPrompt(
-              state.nlQuery,
-              state.currentSql,
-              state.lastError,
-              schemaString,
-          )
+            state.nlQuery,
+            state.currentSql,
+            state.lastError,
+            schemaString,
+        )
         : buildGenerationPrompt(
-              state.nlQuery,
-              schemaString,
-              state.conversationHistory,
-          );
+            state.nlQuery,
+            schemaString,
+            state.conversationHistory,
+        );
 
     const systemPrompt = isCorrection
         ? CORRECTION_SYSTEM_PROMPT

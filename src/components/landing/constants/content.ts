@@ -101,14 +101,14 @@ export const steps: HowItWorksStep[] = [
     id: 'connect',
     title: 'Connect your database in seconds.',
     description:
-      'Paste your connection string. Datavue reads your schema, understands table relationships, and is ready to query in under 90 seconds.',
+      'Paste your connection string. DatavueX reads your schema, understands table relationships, and is ready to query in under 90 seconds.',
     detail: 'Postgres, MySQL, SQLite, MongoDB',
   },
   {
     id: 'ask',
     title: 'Ask anything in plain English.',
     description:
-      "Type your question like you'd ask a teammate. Datavue's LangGraph agent translates it into production-grade SQL shaped to your schema.",
+      "Type your question like you'd ask a teammate. DatavueX's LangGraph agent translates it into production-grade SQL shaped to your schema.",
     detail: 'Schema-aware SQL generation',
   },
   {
@@ -125,7 +125,7 @@ export const featureCards: FeatureCard[] = [
     label: 'Core differentiation',
     title: 'Self-healing SQL',
     description:
-      'When a query breaks, Datavue diagnoses the failure, rewrites the SQL, and retries automatically before the user ever sees an error.',
+      'When a query breaks, DatavueX diagnoses the failure, rewrites the SQL, and retries automatically before the user ever sees an error.',
     span: 'lg:col-span-7',
     iconName: 'wand',
     visual: 'heal',
@@ -135,7 +135,7 @@ export const featureCards: FeatureCard[] = [
     label: 'See signal sooner',
     title: 'Proactive insight detection',
     description:
-      'Datavue flags abnormal trends, revenue drops, and churn signals without waiting for a manual prompt.',
+      'DatavueX flags abnormal trends, revenue drops, and churn signals without waiting for a manual prompt.',
     span: 'lg:col-span-5',
     iconName: 'sparkChart',
     visual: 'insight',
@@ -164,7 +164,7 @@ export const featureCards: FeatureCard[] = [
     label: 'Built for security review',
     title: 'Enterprise self-hosting',
     description:
-      'Run Datavue inside your infrastructure with Ollama, private models, and no third-party data egress.',
+      'Run DatavueX inside your infrastructure with Ollama, private models, and no third-party data egress.',
     span: 'lg:col-span-4',
     iconName: 'shield',
     visual: 'enterprise',
@@ -221,7 +221,7 @@ export const insightFeed: InsightFeedItem[] = [
 export const testimonials: Testimonial[] = [
   {
     quote:
-      'Datavue cut our analytics ticket queue from 40 requests a week to effectively zero. PMs get answers immediately, and our analysts can focus on real modeling work again.',
+      'DatavueX cut our analytics ticket queue from 40 requests a week to effectively zero. PMs get answers immediately, and our analysts can focus on real modeling work again.',
     name: 'Mira Patel',
     role: 'VP Product, Northstar Cloud',
     initials: 'MP',
@@ -235,7 +235,7 @@ export const testimonials: Testimonial[] = [
   },
   {
     quote:
-      'We went from waiting on dashboards to spotting anomalies before our morning standup. Datavue feels like adding a schema-aware analyst to every team.',
+      'We went from waiting on dashboards to spotting anomalies before our morning standup. DatavueX feels like adding a schema-aware analyst to every team.',
     name: 'Sofia Lin',
     role: 'COO, Helio Stack',
     initials: 'SL',
@@ -244,7 +244,7 @@ export const testimonials: Testimonial[] = [
 
 export const faqs: Faq[] = [
   {
-    question: 'Does Datavue send our data to third-party model providers?',
+    question: 'Does DatavueX send our data to third-party model providers?',
     answer:
       'Not unless you choose a hosted model path. Enterprise runs fully on your own infrastructure with Ollama, so prompts, schema, and results stay inside your environment.',
   },

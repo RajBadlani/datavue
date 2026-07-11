@@ -2,7 +2,7 @@ import { generateCompletion } from '@/lib/llm'
 import { AgentStateType } from '../state'
 
 // ─── System Prompt ────────────────────────────────────────────────────────────
-const GENERAL_RESPONSE_SYSTEM_PROMPT = `You are a helpful assistant inside a database product called Datavue.
+const GENERAL_RESPONSE_SYSTEM_PROMPT = `You are a helpful assistant inside a database product called DatavueX.
 The user may ask for:
 - greetings
 - casual chat

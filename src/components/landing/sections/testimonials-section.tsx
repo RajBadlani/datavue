@@ -17,7 +17,7 @@ export function TestimonialsSection() {
               Built for the questions teams actually ask.
             </h2>
             <p className="mt-4 max-w-[38rem] text-base leading-7 text-[#5F6475] sm:text-lg sm:leading-8">
-              Datavue helps operators, analysts, and security teams answer business questions without losing the SQL, audit trail, or review context.
+              DatavueX helps operators, analysts, and security teams answer business questions without losing the SQL, audit trail, or review context.
             </p>
           </div>
 

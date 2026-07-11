@@ -18,7 +18,7 @@ export function SelfHealingSection() {
               Every failed query leaves a repair trail.
             </h2>
             <p className="mt-4 max-w-3xl text-base leading-7 text-[#5F6475] sm:text-lg sm:leading-8">
-              Datavue records the failed attempt, detects the schema mismatch, retries safely, and shows the correction path before the answer is trusted.
+              DatavueX records the failed attempt, detects the schema mismatch, retries safely, and shows the correction path before the answer is trusted.
             </p>
           </div>
           <div className="mt-5 flex flex-wrap gap-3">

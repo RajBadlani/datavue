@@ -4,8 +4,8 @@ import { FooterSection } from '@/components/landing/sections'
 import { MarketingHeader } from '@/components/marketing'
 
 export const metadata: Metadata = {
-  title: 'About — Datavue',
-  description: 'Why Datavue exists: trustworthy, auditable database intelligence for teams of mixed data fluency.',
+  title: 'About — DatavueX',
+  description: 'Why DatavueX exists: trustworthy, auditable database intelligence for teams of mixed data fluency.',
 }
 
 // TODO: edit this copy and the numbers below to match your real story.
@@ -50,7 +50,7 @@ export default function AboutPage() {
               Database intelligence that a team can actually defend.
             </h1>
             <p className="mt-5 text-lg leading-8 text-[#7B7E8F]">
-              Datavue closes the gap between people with data questions and people who can write safe queries. We
+              DatavueX closes the gap between people with data questions and people who can write safe queries. We
               translate plain-English questions into read-only SQL, self-heal failed attempts, mask sensitive fields,
               and keep an audit trail of everything that ran.
             </p>
@@ -82,10 +82,10 @@ export default function AboutPage() {
               <p>
                 A product manager asks one important question and waits three days for an analyst to write the query. A
                 single JOIN error silently returns bad numbers, and decisions get made on top of them. We kept seeing
-                the same pattern, so we built Datavue to make trustworthy answers immediate without hiding what ran.
+                the same pattern, so we built DatavueX to make trustworthy answers immediate without hiding what ran.
               </p>
               <p>
-                Instead of another dashboard, Datavue behaves like a calm expert sitting beside you: transparent about
+                Instead of another dashboard, DatavueX behaves like a calm expert sitting beside you: transparent about
                 SQL, serious about credentials, and helpful across mixed technical fluency. Replace this paragraph with
                 your own origin story, milestones, and what you&apos;re building next.
               </p>

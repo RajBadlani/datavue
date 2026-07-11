@@ -182,13 +182,13 @@ export function DashboardDataExplorer({
 
   const filteredTables = selectedConnection
     ? selectedConnection.tables.filter(table => {
-        const term = search.trim().toLowerCase()
-        if (!term) return true
-        return (
-          table.displayName.toLowerCase().includes(term) ||
-          table.columns.some(column => column.name.toLowerCase().includes(term))
-        )
-      })
+      const term = search.trim().toLowerCase()
+      if (!term) return true
+      return (
+        table.displayName.toLowerCase().includes(term) ||
+        table.columns.some(column => column.name.toLowerCase().includes(term))
+      )
+    })
     : []
   const selectedTable = selectedConnection?.tables.find(table => table.id === selectedTableId) ?? null
   const activePreview = preview && preview.tableId === selectedTableId ? preview : null
@@ -333,11 +333,10 @@ export function DashboardDataExplorer({
                   key={connection.id}
                   type="button"
                   onClick={() => selectConnection(connection.id)}
-                  className={`w-[260px] rounded-[24px] border p-4 text-left transition-colors ${
-                    isActive
-                      ? 'border-[#5849F2] bg-[#EDEAFF]'
-                      : 'border-[#E5E0D4] bg-[#FCFAF5] hover:border-[#C2CBD4] hover:bg-white'
-                  }`}
+                  className={`w-[260px] rounded-[24px] border p-4 text-left transition-colors ${isActive
+                    ? 'border-[#5849F2] bg-[#EDEAFF]'
+                    : 'border-[#E5E0D4] bg-[#FCFAF5] hover:border-[#C2CBD4] hover:bg-white'
+                    }`}
                 >
                   <div className="flex items-start justify-between gap-3">
                     <div className="flex items-center gap-2 text-[#313852]">
@@ -405,31 +404,30 @@ export function DashboardDataExplorer({
 
             {selectedConnection?.syncStatus === 'SYNCED'
               ? filteredTables.map(table => {
-                  const isActive = table.id === selectedTableId
+                const isActive = table.id === selectedTableId
 
-                  return (
-                    <button
-                      key={table.id}
-                      type="button"
-                      onClick={() => selectTable(table.id)}
-                      className={`w-full rounded-2xl border p-3 text-left transition-colors ${
-                        isActive
-                          ? 'border-[#5849F2] bg-[#EDEAFF]'
-                          : 'border-[#E5E0D4] bg-[#FCFAF5] hover:border-[#C2CBD4] hover:bg-white'
+                return (
+                  <button
+                    key={table.id}
+                    type="button"
+                    onClick={() => selectTable(table.id)}
+                    className={`w-full rounded-2xl border p-3 text-left transition-colors ${isActive
+                      ? 'border-[#5849F2] bg-[#EDEAFF]'
+                      : 'border-[#E5E0D4] bg-[#FCFAF5] hover:border-[#C2CBD4] hover:bg-white'
                       }`}
-                    >
-                      <div className="flex items-start justify-between gap-3">
-                        <div className="min-w-0">
-                          <p className="truncate font-mono text-[13px] text-[#313852]">{table.displayName}</p>
-                          <p className="mt-1 text-[11px] text-[#7B7E8F]">{table.rowEstimateLabel}</p>
-                        </div>
-                        <span className="rounded-full border border-[#E5E0D4] bg-white px-2.5 py-1 text-[11px] text-[#5F6475]">
-                          {table.columns.length} cols
-                        </span>
+                  >
+                    <div className="flex items-start justify-between gap-3">
+                      <div className="min-w-0">
+                        <p className="truncate font-mono text-[13px] text-[#313852]">{table.displayName}</p>
+                        <p className="mt-1 text-[11px] text-[#7B7E8F]">{table.rowEstimateLabel}</p>
                       </div>
-                    </button>
-                  )
-                })
+                      <span className="rounded-full border border-[#E5E0D4] bg-white px-2.5 py-1 text-[11px] text-[#5F6475]">
+                        {table.columns.length} cols
+                      </span>
+                    </div>
+                  </button>
+                )
+              })
               : null}
           </div>
         </aside>
@@ -464,7 +462,7 @@ export function DashboardDataExplorer({
 
                 {selectedConnection.syncStatus !== 'SYNCED' ? (
                   <div className="mt-4 rounded-2xl border border-[#E5E0D4] bg-[#FCFAF5] p-5 text-sm leading-7 text-[#7B7E8F]">
-                    Datavue only opens live table previews after schema sync completes. Return to Connections if this source needs another sync.
+                    DatavueX only opens live table previews after schema sync completes. Return to Connections if this source needs another sync.
                   </div>
                 ) : null}
 

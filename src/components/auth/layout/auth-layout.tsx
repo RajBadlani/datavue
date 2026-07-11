@@ -45,7 +45,7 @@ export function AuthLayout({ title, subtitle, children, footer, microcopy }: Aut
             <div className="mt-3 text-center text-[13px] text-[#7B7E8F]">{footer}</div>
 
             <p className="mt-5 text-center text-[12px] leading-6 text-[#7B7E8F]">
-              By continuing, you agree to Datavue&apos;s{' '}
+              By continuing, you agree to DatavueX&apos;s{' '}
               <a href="/terms" className="text-[#5849F2] transition-colors hover:text-[#4338CA]">
                 Terms of Service
               </a>{' '}

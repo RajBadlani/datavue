@@ -3,7 +3,7 @@
 import { useState, type FormEvent } from 'react'
 
 // Where the mailto composer sends messages. Swap for a real API route when the backend is ready.
-const CONTACT_EMAIL = 'hello@datavue.app'
+const CONTACT_EMAIL = 'hello@datavuex.com'
 
 const inputClass =
   'h-12 w-full rounded-2xl border border-[#C2CBD4] bg-white px-4 text-[15px] text-[#313852] outline-none transition placeholder:text-[#8B8FA0] focus:border-[#5849F2] focus-visible:ring-2 focus-visible:ring-[#5849F2] focus-visible:ring-offset-2 focus-visible:ring-offset-[#FCFAF5]'
@@ -18,7 +18,7 @@ export function ContactForm() {
 
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
-    const subject = `Datavue enquiry from ${name || 'a visitor'}`
+    const subject = `DatavueX enquiry from ${name || 'a visitor'}`
     const lines = [
       `Name: ${name}`,
       `Email: ${email}`,

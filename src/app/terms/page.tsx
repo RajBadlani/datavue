@@ -2,14 +2,14 @@ import type { Metadata } from 'next'
 import { LegalPage, type LegalSection } from '@/components/marketing'
 
 export const metadata: Metadata = {
-  title: 'Terms of Service — Datavue',
-  description: 'The terms governing your use of Datavue, including acceptable use, data connections, and liability.',
+  title: 'Terms of Service — DatavueX',
+  description: 'The terms governing your use of DatavueX, including acceptable use, data connections, and liability.',
 }
 
 // TODO: replace company name, contact email, and governing-law jurisdiction with your real details,
 // and have counsel confirm the specifics before launch.
-const COMPANY = 'Datavue'
-const CONTACT_EMAIL = 'legal@datavue.app'
+const COMPANY = 'DatavueX'
+const CONTACT_EMAIL = 'legal@datavuex.com'
 const GOVERNING_LAW = 'India'
 
 const sections: LegalSection[] = [
@@ -64,7 +64,7 @@ const sections: LegalSection[] = [
     id: 'ai-output',
     heading: 'AI-Generated Output',
     paragraphs: [
-      'The Service uses language models to generate SQL and summaries. AI output can be inaccurate, incomplete, or unexpected. While Datavue constrains generated queries to read-only operations and can retry failures, you are responsible for reviewing generated SQL and results before relying on them.',
+      'The Service uses language models to generate SQL and summaries. AI output can be inaccurate, incomplete, or unexpected. While DatavueX constrains generated queries to read-only operations and can retry failures, you are responsible for reviewing generated SQL and results before relying on them.',
       'We make no warranty that generated queries or insights are correct, complete, or fit for a particular purpose.',
     ],
   },
@@ -82,7 +82,7 @@ const sections: LegalSection[] = [
     id: 'self-hosting',
     heading: 'Self-Hosted Deployments',
     paragraphs: [
-      'If you deploy Datavue on your own infrastructure, you are responsible for its operation, security, configuration, and the data processed within your environment. Third-party and open-source components may be governed by their own licenses. These Terms govern your use of the hosted Service unless a separate agreement applies to your deployment.',
+      'If you deploy DatavueX on your own infrastructure, you are responsible for its operation, security, configuration, and the data processed within your environment. Third-party and open-source components may be governed by their own licenses. These Terms govern your use of the hosted Service unless a separate agreement applies to your deployment.',
     ],
   },
   {

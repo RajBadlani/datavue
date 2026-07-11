@@ -20,7 +20,7 @@ export function HeroSection({ onOpenDemo }: HeroSectionProps) {
               Ask your database. Get answers you can verify.
             </h1>
             <p className="max-w-2xl text-lg leading-8 text-[#5F6475] sm:text-xl sm:leading-9">
-              Datavue turns natural-language questions into read-only SQL, repairs failed attempts, masks sensitive fields, and saves the trail behind every answer.
+              DatavueX turns natural-language questions into read-only SQL, repairs failed attempts, masks sensitive fields, and saves the trail behind every answer.
             </p>
           </div>
 

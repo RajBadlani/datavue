@@ -2,14 +2,14 @@ import type { Metadata } from 'next'
 import { LegalPage, type LegalSection } from '@/components/marketing'
 
 export const metadata: Metadata = {
-  title: 'Privacy Policy — Datavue',
-  description: 'How Datavue collects, uses, protects, and shares data across connected databases, queries, and audit logs.',
+  title: 'Privacy Policy — DatavueX',
+  description: 'How DatavueX collects, uses, protects, and shares data across connected databases, queries, and audit logs.',
 }
 
 // TODO: replace company name, contact email, and jurisdiction with your real details,
 // and have counsel confirm the specifics before launch.
-const COMPANY = 'Datavue'
-const CONTACT_EMAIL = 'privacy@datavue.app'
+const COMPANY = 'DatavueX'
+const CONTACT_EMAIL = 'privacy@datavuex.com'
 
 const sections: LegalSection[] = [
   {
@@ -17,7 +17,7 @@ const sections: LegalSection[] = [
     heading: 'Overview',
     paragraphs: [
       `${COMPANY} is an AI-powered database intelligence platform. This Privacy Policy explains what information we collect when you use the service, how we use and protect it, and the choices you have. It applies to our hosted product and, where noted, to self-hosted deployments you operate yourself.`,
-      'We designed Datavue around data boundaries: your database credentials are encrypted, generated queries are read-only by design, and self-hosting lets you keep prompts, schema, and results inside your own infrastructure.',
+      'We designed DatavueX around data boundaries: your database credentials are encrypted, generated queries are read-only by design, and self-hosting lets you keep prompts, schema, and results inside your own infrastructure.',
     ],
   },
   {
@@ -37,7 +37,7 @@ const sections: LegalSection[] = [
     id: 'query-content',
     heading: 'Query Content and Your Database Data',
     paragraphs: [
-      'When you ask a question, Datavue sends your prompt and relevant schema context to a language model to generate SQL. Generated queries are constrained to read-only operations and are executed against your connected database to return results.',
+      'When you ask a question, DatavueX sends your prompt and relevant schema context to a language model to generate SQL. Generated queries are constrained to read-only operations and are executed against your connected database to return results.',
       'On our hosted product, prompts and schema context may be processed by third-party model providers strictly to generate responses. If you enable PII masking, sensitive columns are masked before results are surfaced. If you self-host with a local model, this content stays within your environment and is not sent to any third party.',
       'We do not sell your database contents, query results, or prompts, and we do not use them to train third-party models.',
     ],
@@ -100,7 +100,7 @@ const sections: LegalSection[] = [
     id: 'self-hosting',
     heading: 'Self-Hosted Deployments',
     paragraphs: [
-      'If you run Datavue on your own infrastructure, you are the controller of the data processed within your deployment. In that configuration, database contents, prompts, schema, and query results can remain entirely inside your environment, including when you use a local model. This policy describes our hosted service; your own policies govern data you process in a self-hosted deployment.',
+      'If you run DatavueX on your own infrastructure, you are the controller of the data processed within your deployment. In that configuration, database contents, prompts, schema, and query results can remain entirely inside your environment, including when you use a local model. This policy describes our hosted service; your own policies govern data you process in a self-hosted deployment.',
     ],
   },
   {
@@ -114,7 +114,7 @@ const sections: LegalSection[] = [
     id: 'children',
     heading: "Children's Privacy",
     paragraphs: [
-      'Datavue is not directed to children under 16 and is not intended for their use. We do not knowingly collect personal data from children. If you believe a child has provided us data, contact us and we will delete it.',
+      'DatavueX is not directed to children under 16 and is not intended for their use. We do not knowingly collect personal data from children. If you believe a child has provided us data, contact us and we will delete it.',
     ],
   },
   {

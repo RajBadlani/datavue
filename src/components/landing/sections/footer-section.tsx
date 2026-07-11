@@ -10,7 +10,7 @@ export function FooterSection() {
             <p className="mt-4 max-w-xs text-sm leading-7 text-[#7B7E8F]">AI-powered natural language database intelligence.</p>
             <div className="mt-5 flex gap-3 text-[#313852]">
               {/* TODO: replace with your real X profile URL */}
-              <SocialBadge label="X" href="https://x.com/datavue" />
+              <SocialBadge label="X" href="https://x.com/datavuex" />
             </div>
           </div>
 
@@ -39,7 +39,7 @@ export function FooterSection() {
           />
         </div>
 
-        <p className="mt-12 border-t border-[#C2CBD4] pt-6 text-sm text-[#7B7E8F]">© 2026 Datavue. Natural-language database intelligence for auditable teams.</p>
+        <p className="mt-12 border-t border-[#C2CBD4] pt-6 text-sm text-[#7B7E8F]">© 2026 DatavueX. Natural-language database intelligence for auditable teams.</p>
       </div>
     </footer>
   )

@@ -1,6 +1,6 @@
 import { Reveal, SectionLabel } from '@/components/landing/ui'
 
-const boundaryNodes = ['Datavue app', 'Worker', 'Redis', 'Postgres', 'Ollama', 'Your database'] as const
+const boundaryNodes = ['DatavueX app', 'Worker', 'Redis', 'Postgres', 'Ollama', 'Your database'] as const
 
 export function EnterpriseSection({ onOpenEnterprise }: { onOpenEnterprise: () => void }) {
   return (
@@ -17,7 +17,7 @@ export function EnterpriseSection({ onOpenEnterprise }: { onOpenEnterprise: () =
 
           <div className="mt-8 flex flex-wrap gap-3">
             {['No data egress', 'Ollama-ready', 'Audit controls'].map(item => (
-                <span key={item} className="rounded-full border border-[#7E8498] bg-[#3A4058] px-4 py-2 text-sm font-medium text-[#F7F4EB]">
+              <span key={item} className="rounded-full border border-[#7E8498] bg-[#3A4058] px-4 py-2 text-sm font-medium text-[#F7F4EB]">
                 {item}
               </span>
             ))}

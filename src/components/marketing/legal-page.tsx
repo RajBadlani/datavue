@@ -32,7 +32,7 @@ export function LegalPage({ label, title, effectiveDate, intro, sections }: Lega
 
           <div className="mt-8 rounded-[1.5rem] border border-[#E5E0D4] bg-[#EDEAFF] px-6 py-5">
             <p className="text-[15px] leading-7 text-[#313852]">
-              This document is a template written for the Datavue product. It is not legal advice. Have qualified
+              This document is a template written for the DatavueX product. It is not legal advice. Have qualified
               counsel review and adapt it for your jurisdiction and business before you rely on it in production.
             </p>
           </div>

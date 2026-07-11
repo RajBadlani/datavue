@@ -5,7 +5,7 @@ import { NumberTicker, Reveal, SectionLabel } from '@/components/landing/ui'
 function HowItWorksPanel({ activeStep }: { activeStep: number }) {
   if (activeStep === 0) {
     return (
-        <div className="space-y-5 rounded-[1.5rem] border border-[#C2CBD4] bg-[#FCFAF5] p-4 shadow-[0_24px_80px_rgba(49,56,82,0.08)] sm:rounded-[2rem] sm:p-6">
+      <div className="space-y-5 rounded-[1.5rem] border border-[#C2CBD4] bg-[#FCFAF5] p-4 shadow-[0_24px_80px_rgba(49,56,82,0.08)] sm:rounded-[2rem] sm:p-6">
         <div className="flex flex-col gap-3 rounded-2xl border border-[#C2CBD4] bg-[#F7F4EB] px-4 py-3 sm:flex-row sm:items-center sm:justify-between">
           <div>
             <p className="text-sm font-semibold text-[#313852]">Connect a data source</p>
@@ -48,9 +48,9 @@ function HowItWorksPanel({ activeStep }: { activeStep: number }) {
 
   if (activeStep === 1) {
     return (
-        <div className="space-y-5 rounded-[1.5rem] border border-[#C2CBD4] bg-[#FCFAF5] p-4 shadow-[0_24px_80px_rgba(49,56,82,0.08)] sm:rounded-[2rem] sm:p-6">
+      <div className="space-y-5 rounded-[1.5rem] border border-[#C2CBD4] bg-[#FCFAF5] p-4 shadow-[0_24px_80px_rgba(49,56,82,0.08)] sm:rounded-[2rem] sm:p-6">
         <div className="rounded-3xl border border-[#C2CBD4] bg-[#F7F4EB] p-4">
-          <p className="text-xs uppercase tracking-[0.3em] text-[#7B7E8F]">Ask Datavue</p>
+          <p className="text-xs uppercase tracking-[0.3em] text-[#7B7E8F]">Ask DatavueX</p>
           <p className="mt-3 text-lg text-[#313852]">Show me expansion revenue from enterprise accounts by quarter</p>
         </div>
         <div className="overflow-x-auto rounded-3xl border border-[#D6DDF3] bg-[#EDEAFF] p-5 font-mono text-sm leading-7 text-[#313852]">
@@ -97,7 +97,7 @@ function HowItWorksPanel({ activeStep }: { activeStep: number }) {
       <div className="rounded-3xl border border-[#D6DDF3] bg-[#EDEAFF] p-5 text-[#313852]">
         <p className="text-xs font-semibold uppercase tracking-[0.3em] text-[#5849F2]">Proactive insight</p>
         <p className="mt-3 text-base font-medium">23% spike in Product B revenue in March. Possible seasonal pattern detected.</p>
-        <p className="mt-2 text-sm text-[#5F6475]">Datavue found the same pattern in March last year and flagged it without a manual prompt.</p>
+        <p className="mt-2 text-sm text-[#5F6475]">DatavueX found the same pattern in March last year and flagged it without a manual prompt.</p>
       </div>
     </div>
   )
@@ -113,7 +113,7 @@ export function HowItWorksSection({ activeStep, stepRefs }: HowItWorksSectionPro
     <section className="scroll-mt-28 bg-[#F7F4EB] py-24 sm:py-32">
       <div className="mx-auto grid max-w-7xl gap-10 px-6 lg:grid-cols-[0.9fr_1.1fr] lg:gap-12">
         <div>
-          <SectionLabel>HOW DATAVUE WORKS</SectionLabel>
+          <SectionLabel>HOW DATAVUEX WORKS</SectionLabel>
           <h2 className="mt-3 max-w-xl text-[clamp(2.375rem,4vw,3.625rem)] font-semibold leading-[1.03] tracking-[-0.045em] text-[#313852]">
             From plain English to trusted analytics.
           </h2>
@@ -130,11 +130,10 @@ export function HowItWorksSection({ activeStep, stepRefs }: HowItWorksSectionPro
                 {index < steps.length - 1 ? (
                   <span className="absolute left-[17px] top-10 hidden h-[calc(100%+1.75rem)] w-px bg-[#C2CBD4] sm:block" />
                 ) : null}
-                <span className={`mb-4 flex h-9 w-9 items-center justify-center rounded-full border text-sm font-semibold transition-all duration-300 sm:absolute sm:left-0 sm:top-0 sm:mb-0 ${
-                  activeStep === index
-                    ? 'border-[#5849F2] bg-[#5849F2] text-[#FCFAF5]'
-                    : 'border-[#C2CBD4] bg-[#FCFAF5] text-[#7B7E8F]'
-                }`}>
+                <span className={`mb-4 flex h-9 w-9 items-center justify-center rounded-full border text-sm font-semibold transition-all duration-300 sm:absolute sm:left-0 sm:top-0 sm:mb-0 ${activeStep === index
+                  ? 'border-[#5849F2] bg-[#5849F2] text-[#FCFAF5]'
+                  : 'border-[#C2CBD4] bg-[#FCFAF5] text-[#7B7E8F]'
+                  }`}>
                   {index + 1}
                 </span>
                 <Reveal>

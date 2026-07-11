@@ -4,7 +4,7 @@ import { nextCookies } from 'better-auth/next-js'
 import prisma from '@/lib/prisma'
 
 export const auth = betterAuth({
-  appName: 'Datavue',
+  appName: 'DatavueX',
   database: prismaAdapter(prisma, {
     provider: 'postgresql',
   }),

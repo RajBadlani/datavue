@@ -13,7 +13,7 @@ export function IntegrationsSection() {
                 Connect the data stack you already use.
               </h2>
               <p className="mt-4 max-w-[38rem] text-base leading-7 text-[#5F6475] sm:text-lg sm:leading-8">
-                Datavue works with your existing databases, ORMs, and analytics workflow without forcing a new stack.
+                DatavueX works with your existing databases, ORMs, and analytics workflow without forcing a new stack.
               </p>
             </div>
 

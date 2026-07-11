@@ -3,7 +3,7 @@ import { AgentStateType, RelevantTable } from '../state'
 import { buildSchemaString } from './schema-context.node'
 
 // ─── System Prompt ────────────────────────────────────────────────────────────
-const SCHEMA_RESPONSE_SYSTEM_PROMPT = `You are a database schema explainer inside a product called Datavue.
+const SCHEMA_RESPONSE_SYSTEM_PROMPT = `You are a database schema explainer inside a product called DatavueX.
 The user is asking about the structure of their database, not asking for a SQL query result.
 You will be given:
 1. The user's question

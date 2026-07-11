@@ -94,7 +94,7 @@ const defaultDbType = dbTypeOptions[0].value
 const firstConnectionSteps = [
   {
     title: 'Bring a read-only credential',
-    description: 'Use a restricted user so Datavue can inspect schema and answer questions without write access.',
+    description: 'Use a restricted user so DatavueX can inspect schema and answer questions without write access.',
   },
   {
     title: 'Test before saving',
@@ -271,7 +271,7 @@ export function ConnectionsPage() {
           enqueueToast({
             tone: 'success',
             title: 'Database ready for chat and analysis',
-            description: `${connection.name} finished syncing and is ready inside Datavue.`,
+            description: `${connection.name} finished syncing and is ready inside DatavueX.`,
             actionLabel: 'Open Chat',
             actionConnectionId: connection.id,
           })
@@ -777,8 +777,8 @@ export function ConnectionsPage() {
 
           <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
             {isRefreshingConnections ? <span className="text-xs text-[#7B7E8F]">Refreshing statuses...</span> : null}
-              <button
-                type="button"
+            <button
+              type="button"
               onClick={() => openNewConnectionDialog()}
               className="inline-flex cursor-pointer items-center justify-center gap-2 rounded-full bg-[#5849F2] px-4 py-2.5 text-sm font-semibold text-[#FCFAF5] transition-colors hover:bg-[#4338CA]"
             >
@@ -865,7 +865,7 @@ export function ConnectionsPage() {
                     First setup
                   </div>
                   <h2 className="mt-5 font-display text-[22px] leading-none tracking-[-0.04em] text-[#313852]">Connect one database to unlock chat.</h2>
-                  <p className="mt-3 max-w-xl text-sm leading-7 text-[#7B7E8F]">Start with a read-only credential. Datavue tests the connection, stores credentials encrypted, then syncs schema so questions can be checked against real tables.</p>
+                  <p className="mt-3 max-w-xl text-sm leading-7 text-[#7B7E8F]">Start with a read-only credential. DatavueX tests the connection, stores credentials encrypted, then syncs schema so questions can be checked against real tables.</p>
                 </div>
 
                 <div className="mt-6 grid gap-3 lg:grid-cols-3">
@@ -913,7 +913,7 @@ export function ConnectionsPage() {
                 <button type="button" onClick={() => setSearch('')} className="text-[#5849F2] transition-colors hover:text-[#4338CA]">Clear search</button>
               </div>
             ) : (
-               <div ref={gridRef} tabIndex={0} className="grid gap-4 rounded-2xl outline-none focus-visible:ring-2 focus-visible:ring-[#5849F2] focus-visible:ring-offset-2 focus-visible:ring-offset-[#F7F4EB] md:grid-cols-2" role="grid" aria-label="Database connections">
+              <div ref={gridRef} tabIndex={0} className="grid gap-4 rounded-2xl outline-none focus-visible:ring-2 focus-visible:ring-[#5849F2] focus-visible:ring-offset-2 focus-visible:ring-offset-[#F7F4EB] md:grid-cols-2" role="grid" aria-label="Database connections">
                 {filteredConnections.map(connection => {
                   const selected = connection.id === selectedId
                   const status = getConnectionStatusMeta(connection.status)
@@ -933,11 +933,10 @@ export function ConnectionsPage() {
                       }}
                       onMouseEnter={() => setHoveredId(connection.id)}
                       onMouseLeave={() => setHoveredId(current => (current === connection.id ? null : current))}
-                      className={`relative min-h-40 cursor-pointer rounded-[12px] bg-white p-4 transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#5849F2] focus-visible:ring-offset-2 focus-visible:ring-offset-[#F7F4EB] ${
-                        selected
-                          ? 'border-2 border-[#5849F2] bg-[#FAF8FF] shadow-[0_18px_60px_rgba(88,73,242,0.12)]'
-                          : 'border border-[#C2CBD4] hover:border-[#5849F2] hover:shadow-[0_18px_50px_rgba(49,56,82,0.06)]'
-                      } ${search && !(connection.name.toLowerCase().includes(search.toLowerCase()) || connection.host.toLowerCase().includes(search.toLowerCase())) ? 'opacity-40' : 'opacity-100'}`}
+                      className={`relative min-h-40 cursor-pointer rounded-[12px] bg-white p-4 transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#5849F2] focus-visible:ring-offset-2 focus-visible:ring-offset-[#F7F4EB] ${selected
+                        ? 'border-2 border-[#5849F2] bg-[#FAF8FF] shadow-[0_18px_60px_rgba(88,73,242,0.12)]'
+                        : 'border border-[#C2CBD4] hover:border-[#5849F2] hover:shadow-[0_18px_50px_rgba(49,56,82,0.06)]'
+                        } ${search && !(connection.name.toLowerCase().includes(search.toLowerCase()) || connection.host.toLowerCase().includes(search.toLowerCase())) ? 'opacity-40' : 'opacity-100'}`}
                     >
                       <div className="flex items-start justify-between gap-3">
                         <div className="flex min-w-0 gap-3">
@@ -1336,7 +1335,7 @@ export function ConnectionsPage() {
                     <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                       <div>
                         <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-[#7B7E8F]">3. Test before save</p>
-                        <p className="mt-1 text-[13px] leading-6 text-[#7B7E8F]">Save stays disabled until Datavue confirms the connection works.</p>
+                        <p className="mt-1 text-[13px] leading-6 text-[#7B7E8F]">Save stays disabled until DatavueX confirms the connection works.</p>
                       </div>
                       {testState ? (
                         <div role="status" aria-live="polite" className={`rounded-2xl border px-4 py-3 text-sm sm:max-w-[340px] ${testState.tone === 'success' ? 'border-[#BFE4C7] bg-[#E4F0E8] text-[#1C6B3C]' : 'border-[#F0C4C4] bg-[#FEF3F2] text-[#B42318]'}`}>

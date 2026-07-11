@@ -2,7 +2,7 @@ import { generateCompletion } from '@/lib/llm'
 import { AgentStateType, QueryResult } from '../state'
 
 // ─── System Prompt ────────────────────────────────────────────────────────────
-const RESPONSE_SYSTEM_PROMPT = `You are a data analyst assistant for a product called Datavue.
+const RESPONSE_SYSTEM_PROMPT = `You are a data analyst assistant for a product called DatavueX.
 
 You will be given:
 1. The original question the user asked

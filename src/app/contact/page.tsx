@@ -4,8 +4,8 @@ import { FooterSection } from '@/components/landing/sections'
 import { ContactForm, MarketingHeader } from '@/components/marketing'
 
 export const metadata: Metadata = {
-  title: 'Contact — Datavue',
-  description: 'Talk to the Datavue team about connecting databases, self-hosting, and security review.',
+  title: 'Contact — DatavueX',
+  description: 'Talk to the DatavueX team about connecting databases, self-hosting, and security review.',
 }
 
 // TODO: replace these placeholders with your real details.
@@ -24,8 +24,8 @@ const CONTACT_CHANNELS: ContactChannel[] = [
   },
   {
     label: 'Email',
-    value: 'help@datavue.app',
-    href: 'mailto:help@datavue.app',
+    value: 'help@datavuex.com',
+    href: 'mailto:help@datavuex.com',
     hint: 'We reply within one business day',
   },
   {

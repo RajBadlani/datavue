@@ -15,7 +15,7 @@ const firaCode = Fira_Code({
 })
 
 export const metadata: Metadata = {
-  title: 'Datavue',
+  title: 'DatavueX',
   description: 'Natural language database intelligence with self-healing SQL and proactive insights.',
 }
 

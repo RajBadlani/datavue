@@ -2,7 +2,7 @@ import { generateCompletion } from '@/lib/llm'
 import { AgentStateType, ChartConfig } from '../state'
 
 // ─── LLM Prompt ───────────────────────────────────────────────────────────────
-const VISUALIZATION_SYSTEM_PROMPT = `You are a data visualization expert for a product called Datavue.
+const VISUALIZATION_SYSTEM_PROMPT = `You are a data visualization expert for a product called DatavueX.
 
 You will be given:
 1. The user's original question
@@ -67,8 +67,8 @@ export async function detectVisualizationNode(
 
   // ── Build prompt ─────────────────────────────────────────────────────────
   // Send only first 5 rows as sample — LLM doesn't need all rows to decide
-  const sampleRows  = rows.slice(0, 5)
-  const userPrompt  = `USER QUESTION: ${state.nlQuery}
+  const sampleRows = rows.slice(0, 5)
+  const userPrompt = `USER QUESTION: ${state.nlQuery}
 
 SQL EXECUTED:
 ${state.currentSql}
@@ -87,8 +87,8 @@ Decide the best visualization for this data.`
       [{ role: 'user', content: userPrompt }],
       {
         systemPrompt: VISUALIZATION_SYSTEM_PROMPT,
-        maxTokens:    200,
-        temperature:  0,  // deterministic — same data should always give same chart
+        maxTokens: 200,
+        temperature: 0,  // deterministic — same data should always give same chart
       }
     )
 

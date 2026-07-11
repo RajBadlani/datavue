@@ -70,17 +70,17 @@ function toChatHistory(messages: StoredConversationMessage[]): ChatMessage[] {
     timestamp: message.timestamp,
     ...(message.role === 'assistant'
       ? {
-          turn: {
-            reasoning: message.reasoning ?? [],
-            sql: message.sql ?? null,
-            sqlAttempt: message.sqlAttempt ?? null,
-            chartConfig: message.chartConfig ?? null,
-            queryResult: message.queryResult ?? null,
-            response: message.content,
-            error: null,
-            isBlocked: false,
-          },
-        }
+        turn: {
+          reasoning: message.reasoning ?? [],
+          sql: message.sql ?? null,
+          sqlAttempt: message.sqlAttempt ?? null,
+          chartConfig: message.chartConfig ?? null,
+          queryResult: message.queryResult ?? null,
+          response: message.content,
+          error: null,
+          isBlocked: false,
+        },
+      }
       : {}),
   }))
 }
@@ -145,8 +145,8 @@ export function ConnectionChatPage({ connection, initialMessages }: ConnectionCh
                 title: connection.syncStatus === 'FAILED' ? 'Metadata sync needs attention' : 'Schema context is still preparing',
                 description:
                   connection.syncStatus === 'FAILED'
-                    ? 'Datavue cannot start chat for this connection until metadata sync succeeds. Return to connections and rerun the sync first.'
-                    : 'Datavue only answers after the saved schema finishes syncing. Return to connections and wait for this source to become ready.',
+                    ? 'DatavueX cannot start chat for this connection until metadata sync succeeds. Return to connections and rerun the sync first.'
+                    : 'DatavueX only answers after the saved schema finishes syncing. Return to connections and wait for this source to become ready.',
               }}
             />
           </div>

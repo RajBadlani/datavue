@@ -11,7 +11,7 @@ export function ProactiveIntelligenceSection() {
             Spot important changes before someone asks.
           </h2>
           <p className="mt-4 max-w-[38rem] text-base leading-7 text-[#5F6475] sm:text-lg sm:leading-8">
-            Datavue monitors key metrics and surfaces changes with plain-English context, linked queries, and traceable evidence.
+            DatavueX monitors key metrics and surfaces changes with plain-English context, linked queries, and traceable evidence.
           </p>
         </Reveal>
 

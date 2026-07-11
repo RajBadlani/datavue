@@ -40,11 +40,10 @@ function MobileNavItem({ item, active }: { item: (typeof appNavItems)[number]; a
     <Link
       href={item.href}
       aria-current={active ? 'page' : undefined}
-      className={`flex min-h-12 flex-1 flex-col items-center justify-center gap-1 rounded-2xl px-2 py-2 text-[11px] font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-[#5849F2] focus:ring-offset-2 focus:ring-offset-[#FCFAF5] ${
-        active
-          ? 'bg-[#EDEAFF] text-[#5849F2]'
-          : 'text-[#7B7E8F] hover:bg-[#F7F4EB] hover:text-[#313852]'
-      }`}
+      className={`flex min-h-12 flex-1 flex-col items-center justify-center gap-1 rounded-2xl px-2 py-2 text-[11px] font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-[#5849F2] focus:ring-offset-2 focus:ring-offset-[#FCFAF5] ${active
+        ? 'bg-[#EDEAFF] text-[#5849F2]'
+        : 'text-[#7B7E8F] hover:bg-[#F7F4EB] hover:text-[#313852]'
+        }`}
     >
       <span className="inline-flex h-4 w-4 items-center justify-center">{getShellNavIcon(item.icon)}</span>
       <span className="max-w-full truncate">{item.label}</span>
@@ -84,7 +83,7 @@ export function AppShell({ children, user }: AppShellProps) {
   const [profileOpen, setProfileOpen] = useState(false)
 
   const pageTitle = getPageTitle(pathname)
-  const userName = user.name || 'Datavue User'
+  const userName = user.name || 'DatavueX User'
   const userEmail = user.email
 
   const keyboardHint = useMemo(() => (typeof navigator !== 'undefined' && navigator.userAgent.includes('Mac') ? '⌘K' : 'Ctrl K'), [])
@@ -108,7 +107,7 @@ export function AppShell({ children, user }: AppShellProps) {
           <div>
             <Link href="/connections" className="flex items-center gap-3">
               <AppLogoMark />
-              <span className="font-display text-[16px] tracking-[-0.04em] text-[#313852]">Datavue</span>
+              <span className="font-display text-[16px] tracking-[-0.04em] text-[#313852]">DatavueX</span>
             </Link>
 
             <nav className="mt-5 flex flex-col gap-1">
@@ -119,11 +118,10 @@ export function AppShell({ children, user }: AppShellProps) {
                     key={item.href}
                     href={item.href}
                     aria-current={active ? 'page' : undefined}
-                    className={`flex items-center gap-3 rounded-r-xl border-l-2 px-3 py-2.5 text-sm font-medium transition-colors ${
-                      active
-                        ? 'border-[#5849F2] bg-[#EDEAFF] text-[#5849F2]'
-                        : 'border-transparent text-[#7B7E8F] hover:bg-[#F7F4EB] hover:text-[#313852]'
-                    }`}
+                    className={`flex items-center gap-3 rounded-r-xl border-l-2 px-3 py-2.5 text-sm font-medium transition-colors ${active
+                      ? 'border-[#5849F2] bg-[#EDEAFF] text-[#5849F2]'
+                      : 'border-transparent text-[#7B7E8F] hover:bg-[#F7F4EB] hover:text-[#313852]'
+                      }`}
                   >
                     <span className="inline-flex h-4 w-4 items-center justify-center">{getShellNavIcon(item.icon)}</span>
                     <span>{item.label}</span>
