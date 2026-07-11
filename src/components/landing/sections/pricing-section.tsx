@@ -26,18 +26,16 @@ export function PricingSection({ annualBilling, onChangeAnnualBilling, openFaq, 
             <button
               type="button"
               onClick={() => onChangeAnnualBilling(false)}
-              className={`cursor-pointer rounded-full px-5 py-2 text-sm font-semibold transition ${
-                !annualBilling ? 'bg-[#313852] text-[#F7F4EB]' : 'text-[#5F6475]'
-              }`}
+              className={`cursor-pointer rounded-full px-5 py-2 text-sm font-semibold transition ${!annualBilling ? 'bg-[#313852] text-[#F7F4EB]' : 'text-[#5F6475]'
+                }`}
             >
               Monthly
             </button>
             <button
               type="button"
               onClick={() => onChangeAnnualBilling(true)}
-              className={`cursor-pointer rounded-full px-5 py-2 text-sm font-semibold transition ${
-                annualBilling ? 'bg-[#313852] text-[#F7F4EB]' : 'text-[#5F6475]'
-              }`}
+              className={`cursor-pointer rounded-full px-5 py-2 text-sm font-semibold transition ${annualBilling ? 'bg-[#313852] text-[#F7F4EB]' : 'text-[#5F6475]'
+                }`}
             >
               Annual <span className="ml-2 rounded-full bg-[#EDEAFF] px-2 py-1 text-xs text-[#5849F2]">Save 20%</span>
             </button>
@@ -49,12 +47,13 @@ export function PricingSection({ annualBilling, onChangeAnnualBilling, openFaq, 
           <PricingCard
             featured
             title="Pro"
-            price={`${proPrice}/mo`}
-            description="For teams replacing the analytics queue with reliable answers."
+            originalPrice={`${proPrice}/mo`}
+            price="$0/mo"
+            description="For teams replacing the analytics queue with reliable answers. Free during early access."
             features={proFeatures}
             buttonLabel="Start with a database"
           />
-          <PricingCard title="Enterprise" price="Custom" description="For regulated teams and on-prem deployments." features={enterpriseFeatures} buttonLabel="Contact sales" />
+          <PricingCard title="Enterprise" price="Custom" description="For regulated teams and on-prem deployments." features={enterpriseFeatures} buttonLabel="Contact sales" buttonHref="/contact" />
         </div>
 
         <Reveal className="mt-12 rounded-[2rem] border border-[#C2CBD4] bg-[#FCFAF5] p-6">
