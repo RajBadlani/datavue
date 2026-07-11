@@ -1,3 +1,4 @@
+import Image from 'next/image'
 import Link from 'next/link'
 
 type AuthWordmarkProps = {
@@ -10,9 +11,7 @@ export function AuthWordmark({ centered = false }: AuthWordmarkProps) {
       href="/"
       className={`inline-flex items-center gap-3 ${centered ? 'justify-center' : 'justify-start'}`}
     >
-      <span className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-[#E6E1FF]">
-        <span className="h-3 w-3 rounded-full bg-[#5849F2]" />
-      </span>
+      <Image src="/logo-mark.svg" alt="DatavueX" width={32} height={32} className="h-8 w-8" />
       <span className="font-display text-[22px] tracking-[-0.04em] text-[#313852]">DatavueX</span>
     </Link>
   )
